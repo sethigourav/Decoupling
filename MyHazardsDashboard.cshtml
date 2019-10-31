@@ -1,0 +1,318 @@
+﻿@{
+    ViewContext.ViewBag.Node = "myhazardsdashboard";
+    ViewContext.ViewBag.AngularController = "MyHazardsDashboardController";
+    Layout = "/Views/Shared/_DefaultReportPage.cshtml";
+}
+
+<style>
+    .axis text {
+        font: 10px sans-serif;
+    }
+
+    .axis line,
+    .axis path {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
+
+    .path-line {
+        fill: none;
+        stroke: yellow;
+        stroke-width: 1.5px;
+    }
+
+    /*svg {
+        background: #f0f0f0;
+    }*/
+
+    .circle {
+        height: 140px;
+        width: 140px;
+        background-color: #ffffff;
+        border-radius: 50%;
+        display: inline-block;
+        border: 1px solid black;
+        padding: 12px;
+        text-align: center;
+        line-height: 115px;
+        font-size: 20px;
+        font: bold Verdana;
+    }
+
+    .cirlce-red {
+        height: 140px;
+        width: 140px;
+        background-color: #ffffff;
+        border-radius: 50%;
+        display: inline-block;
+        border: 2px solid red;
+        padding: 12px;
+        text-align: center;
+        /*font: bold 15px/13px Helvetica, Verdana, Tahoma;*/
+        line-height: 115px;
+        font-size: 20px;
+        font: bold Verdana;
+    }
+
+    .vl {
+        border-left: 6px solid grey;
+        height: 50px;
+    }
+</style>
+@section ApplyFilterButton
+{
+<div>
+    <button id="btnfilter1" class="btn btn-default" ng-click="goFilter.submit()" ng-disabled="!applyFilterButtonEnabled" style="margin-left:15px;margin-bottom:20px">Apply Filters</button>
+</div>
+}
+
+
+<div class="alert alert-info" id="nodataselection" ng-if="!applyFilterClicked">
+    <button data-dismiss="alert" class="close" type="button">×</button>
+    <strong>Please click apply filter button in order to view page information.</strong>
+</div>
+
+@*Section-1*@
+<div ng-show="applyFilterClicked">
+    <topaz-section name="Year To Date">
+        <div class="col-xs-10 col-sm-10 centered-horizontal">
+            <div class="row">
+                <table>
+                    <tr>
+                        <th style="text-align:center">YTD Hazards</th>
+                        <th style="text-align:center">YTD Open Hazards</th>
+                        <th style="text-align:center">All Open</th>
+                        <th style="text-align:center"></th>
+                        <th style="text-align:center">YTD High Risk Hazards</th>
+                        <th style="text-align:center">All High Risk Open</th>
+                        <th style="text-align:center"></th>
+                        <th style="text-align:center">% Employee</th>
+                        <th style="text-align:center">% Manager</th>
+                        <th style="text-align:center">% Unique Contributer</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="circle">
+                                <div ng-if="!YTDHazrad">
+                                    Loading...
+                                </div>
+                                <div> {{ YTDHazrad }} </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="circle">
+                                <div ng-if="!Ytd_Open_Hazards">
+                                    Loading...
+                                </div>
+                                <div> {{ Ytd_Open_Hazards }} </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="circle">
+                                <div ng-if="!All_Open">
+                                    Loading...
+                                </div>
+                                <div> {{ All_Open }} </div>
+                            </div>
+                        </td>
+                        <td class="vl"></td>
+                        <td>
+                            <div class="cirlce-red">
+                                <div ng-if="!High_Risk_Hazards">
+                                    Loading...
+                                </div>
+                                <div> {{ High_Risk_Hazards }} </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="cirlce-red">
+                                <div ng-if="!High_Risk_Open">
+                                    Loading...
+                                </div>
+                                <div> {{ High_Risk_Open }} </div>
+                            </div>
+                        </td>
+                        <td class="vl"></td>
+                        <td>
+                            <div class="circle">
+                                <div ng-if="!Percentage_Employee">
+                                    Loading...
+                                </div>
+                                <div> {{ Percentage_Employee }} </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="circle">
+                                <div ng-if="!Percentage_Manager">
+                                    Loading...
+                                </div>
+                                <div> {{ Percentage_Manager }} </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="circle">
+                                @*<div ng-if="!Percentage_Unique_Contributer" style="text-align:center; padding-bottom:50px">*@
+                                <div ng-if="!Percentage_Unique_Contributer">
+                                    Loading...
+                                </div>
+                                <div> {{ Percentage_Unique_Contributer }} </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+        </div>
+
+    </topaz-section>
+
+    @* Section-2 *@
+    <topaz-section header="Monthly Hazards Found-Fixed" loading="!hazardsFoundFixedData">
+        <div class="row">
+            <div class="col-xs-12 col-md-9 centered-horizontal">
+                @* <div class="col-xs-5 col-sm-5 centered-horizontal">
+                *@
+                <topaz-bar-chart data="hazardsFoundFixedData"
+                                 @*controller="MyHazardsDashboardController"*@
+                                 classes="{'Hazards Closed Report': 'info0', 'Hazards Open Report': 'white', 'Shears Closed Report': 'info1','Shears Open Report': 'white'}"
+                                 height="300px"
+                                 width="100%"
+                                 max-width="1000"
+                                 show-y-axis="true"
+                                 @*type="stacked100" *@
+                                 type="stacked"
+                                 show-totals="false"
+                                 @*show-legend="true" *@
+                                 multiple-axes="true"
+                                 y-axis-labels="['Monthly Hazards Found-Fixed','Monthly Shears Found-Fixed']"
+                                 @*x-axis-labels="['Months']" *@>
+
+                </topaz-bar-chart>
+            </div>
+        </div>
+    </topaz-section>
+
+    @* Section-3*@
+    <topaz-section header="Risk Identified - Mitigated" loading="!riskData">
+        <div class="row">
+            <div class="col-xs-12 col-md-9 centered-horizontal">
+                @*<div class="col-xs-4 col-sm-4 text-center">
+                *@
+                <topaz-line-chart data="riskData"
+                                  @*controller="MyHazardsDashboardController"*@
+                                  @*classes="monthlyRiskMitigatedIdentifiedDataClasses"*@
+                                  y-axis-labels="['Risk Identified- Mitigated']"
+                                  @*tick-formats="[undefined, moneyTickFormat]" *@
+                                  show-y-axis="true"
+                                  line-tooltip="true"
+                                  show-totals="false"
+                                  @*origins="unoTimeData.chartOrigins" *@
+                                  height="300px"
+                                  width="100%"
+                                  max-width="1000"
+                                  multipleAxes="false"
+                                  baseline="true">
+                </topaz-line-chart>
+            </div>
+        </div>
+    </topaz-section>
+
+
+
+
+
+    @* Section-4*@
+    <div class="col-xs-12 col-md-5">
+        <topaz-section header="Classification" loading="!classificationData">
+
+            <topaz-hierarchical-horizontal-bar-chart data="classificationData"
+                                                     chart-width="610"
+                                                     chart-height="260"
+                                                     margin-left="230"
+                                                     classes="classificationDataClasses"></topaz-hierarchical-horizontal-bar-chart>
+
+        </topaz-section>
+    </div>
+
+    @* Section-5*@
+    <div class="col-xs-12 col-md-5">
+        <topaz-section header="Process/Activity" loading="!processActivityData">
+
+            <topaz-hierarchical-horizontal-bar-chart data="processActivityData"
+                                                     chart-width="700"
+                                                     chart-height="260"
+                                                     margin-left="320"
+                                                     show-back-button="false"
+                                                     classes="processActivityDataClasses"></topaz-hierarchical-horizontal-bar-chart>
+
+        </topaz-section>
+    </div>
+
+    @* Hazards Details 6 *@
+    <topaz-section name="near-miss-details" header="Hazard Details" loading="!hazardsDescriptionData">
+        <div class="row col-xs-12">
+            <topaz-table data="hazardsDescriptionData.hazards"
+                         headers="{description: 'Description'}"
+                         pagination="true"
+                         page-size="10"
+                         search="true"
+                         no-data-message="<p>There were no hazards for the data selection.</p>"
+                         word-cloud-column="Description">
+            </topaz-table>
+        </div>
+    </topaz-section>
+
+
+    <topaz-section header="Explanation">
+        <div class="row col-xs-12">
+            <p>
+                This page give information about hazards report in the form of charts and summary. The page has 5 sections.<br />
+                First section is a summary information. Other 4 sections have different charts which gives a visual representation of hazards in the system.<br />
+            </p>
+            <h5>Summary</h5>
+            <p> Summary section is not dependent on the date selector.</p>
+            <p> YTD Hazards - This is simple count of the total number of the hazards for Year to date.</p>
+            <p> YTD Open Hazards - The total number of the hazards that are still open for Year to date.</p>
+            <p> All Open - The total number of the hazards that are still open and not limited to Year to date.</p>
+            <p> YTD High Risk Hazards - The total number hazards marked as high risk for Year to date.</p>
+            <p> All High Risk Open - The total number of open hazards marked as high risk and not limited to Year to date.</p>
+            <p> % Employee - The total number of hazards submitted by an employee out of total number of the submitted hazards for Year to date.</p>
+            <p> % Manager - The total number of hazards submitted by a manager out of total number of the submitted hazards for Year to date.</p>
+            <p> % Unique Contributors - The total number of unique employees in a team that submitted hazards out of the total number of employees reporting to the manager.</p>
+
+
+            <h5>Monthly Hazards Found-Fixed</h5>
+
+            <p>
+                This section has bar chart which can have two bars, for hazards and for shears for all months, but only show data for Year to date.<br />
+                The total bar height is the total number of hazards/shears submitted for that month.<br />
+                The bar fill height is the total number of hazards/shears that are submitted in that month.
+            </p>
+
+
+
+            <h5>Risk Identified - Mitigated</h5>
+            <p>
+                This section has line chart, having data for Year to date.<br />
+                This graph has two line one for risk mitigated and another for risk identified.<br />
+                Each dot in the two lines is the total risk for that month of the identified/mitigated risk levels.
+            </p>
+
+
+            <h5>Classification</h5>
+            <p>
+                This section has hierarchical bar chart which splits the hazards based on its classification. The chart will show only top 5 classifications, <br />
+                sorted most to least. Double clicking any bar will navigate to next layer down which are sub-classifications of the parent classification.<br />
+                Up arrow can be used to navigate back to the parent layer.
+            </p>
+
+            <h5>Process/Activity</h5>
+            <p>
+                This section has horizontal bar chart which splits the hazards based on the process or activity related to the Hazard. <br />
+                The chart will show only top 5 classifications, sorted most to least.
+            </p>
+
+        </div>
+    </topaz-section>
+</div>

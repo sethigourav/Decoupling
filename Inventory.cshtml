@@ -1,0 +1,598 @@
+﻿@{
+    ViewContext.ViewBag.Node = "inventory";
+    ViewContext.ViewBag.AngularController = "InventoryDashboardController";
+    ViewContext.ViewBag.SystemSelect = true;
+    Layout = "/Views/Shared/_DefaultReportPage.cshtml";
+}
+@section ApplyFilterButton
+{
+    <div>
+        <button id="btnfilter" class="btn btn-default" ng-click="goFilter.submit()" ng-disabled="!applyFilterButtonEnabled" style="margin-left:15px;margin-bottom:20px">Apply Filters</button>
+    </div>
+}
+
+@section ExtraSelectionBoxes
+{
+
+    <script>
+        // This function is used to make sure one checkbox is always checked
+        function verifyChecked(whichClicked) {
+
+            if ((document.getElementById("capitalExact").checked === false) && (document.getElementById("expenseExact").checked === false) && (document.getElementById("toolingExact").checked === false) && (document.getElementById("otherExact").checked === false)) {
+                alert("At least one Asset Type checkbox must always be selected.");
+                document.getElementById(whichClicked).checked = true;
+            }
+        }
+    </script>
+
+    <div class="col-xs-12 col-sm-4 col-md-3">
+        <topaz-selection-box data="capitalInput" title="Asset Type">
+            <row>
+                <column>
+                    Capital:
+                </column>
+
+                <column>
+                    <label class="btn btn-xs">
+                        <input type="checkbox" id="capitalExact" ng-model="urlParameters.capitalExact" ng-checked="true" onclick="verifyChecked('capitalExact');">
+                    </label>
+                </column>
+            </row>
+            <row>
+                <column>
+                    Expense:
+                </column>
+
+                <column>
+                    <label class="btn btn-xs">
+                        <input type="checkbox" id="expenseExact" ng-model="urlParameters.expenseExact" onclick="verifyChecked('expenseExact');">
+                    </label>
+                </column>
+            </row>
+            <row>
+                <column>
+                    Tooling:
+                </column>
+
+                <column>
+                    <label class="btn btn-xs">
+                        <input type="checkbox" id="toolingExact" ng-model="urlParameters.toolingExact" onclick="verifyChecked('toolingExact');">
+                    </label>
+                </column>
+            </row>
+            <row>
+                <column>
+                    Other:
+                </column>
+
+                <column>
+                    <label class="btn btn-xs">
+                        <input type="checkbox" id="otherExact" ng-model="urlParameters.other" onclick="verifyChecked('otherExact');">
+                    </label>
+                </column>
+            </row>
+            <row>
+                <column>
+                </column>
+                <column>
+                </column>
+                <column>
+                    @*<button type="button" class="btn btn-default btn-xs" ng-click="submitValues()">
+                            Submit
+                        </button>*@
+                </column>
+            </row>
+        </topaz-selection-box>
+    </div>
+    <div class="col-xs-12 col-sm-4 col-md-3">
+        <topaz-selection-box data="assetInput" title="Asset Information">
+            <row>
+                <column>
+                    Asset ID:
+                </column>
+                <column>
+                    <input style="width: 100%" type="text" ng-model="assetInput.assetId" maxlength="50" />
+                </column>
+                <column>
+                    <label class="btn btn-xs">
+                        <input type="checkbox" ng-model="assetInput.assetIdExact"> Exact
+                    </label>
+                </column>
+            </row>
+            <row>
+                <column>
+                    Serial No:
+                </column>
+                <column>
+                    <input style="width: 100%" type="text" ng-model="assetInput.serialNo" maxlength="50" />
+                </column>
+                <column>
+
+                </column>
+            </row>
+            <row>
+                <column>
+                    Weight between:
+                </column>
+                <column>
+                    <input type="text" placeholder="pounds" style="width:33%" maxlength="9" ng-model="assetInput.lowerWeight" />
+                    <span>&nbsp;and&nbsp;</span>
+                    <input type="text" placeholder="pounds" style="width:33%" maxlength="9" ng-model="assetInput.upperWeight" />
+                </column>
+                <column>
+                </column>
+            </row>
+            <row>
+                <column>
+                </column>
+                <column>
+                </column>
+                <column>
+                    @*<button type="button" class="btn btn-default btn-xs" ng-click="submitValues()">
+                            Submit
+                        </button>*@
+                </column>
+            </row>
+        </topaz-selection-box>
+    </div>
+    <div class="col-xs-12 col-sm-4 col-md-3">
+        <topaz-selection-box data="modelInput" title="Model Information">
+            <row>
+                <column>
+                    Manufacturer:
+                </column>
+                <column>
+                    <input style="width: 100%" type="text" ng-model="modelInput.manufacturer" maxlength="64" />
+                </column>
+                <column>
+                    <label class="btn btn-xs">
+                        <input type="checkbox" ng-model="modelInput.manufacturerExact"> Exact
+                    </label>
+                </column>
+            </row>
+            <row>
+                <column>
+                    Model No:
+                </column>
+                <column>
+                    <input style="width: 100%" type="text" ng-model="modelInput.modelNo" maxlength="75" />
+                </column>
+                <column>
+                    <label class="btn btn-xs">
+                        <input type="checkbox" ng-model="modelInput.modelNoExact"> Exact
+                    </label>
+                </column>
+            </row>
+            <row>
+                <column>
+                    Description:
+                </column>
+                <column>
+                    <input style="width: 100%" type="text" ng-model="modelInput.noun" maxlength="256" />
+                </column>
+                <column>
+                    <label class="btn btn-xs">
+                        <input type="checkbox" ng-model="modelInput.nounExact"> Exact
+                    </label>
+                </column>
+            </row>
+            <row>
+                <column>
+                </column>
+                <column>
+                </column>
+                <column>
+                    @*<button type="button" class="btn btn-default btn-xs" ng-click="submitValues()">
+                            Submit
+                        </button>*@
+                </column>
+            </row>
+        </topaz-selection-box>
+    </div>
+
+
+
+}
+
+@*<div>
+   
+    <button id="btnfilter1" class="btn btn-default" ng-click="goFilter.submit()" ng-disabled="!applyFilterButtonEnabled" style="margin-left:35px;margin-bottom:20px">Apply Filter</button>
+</div>*@
+
+<script src="/Scripts/d3/topojson.v1.min.js"></script>
+<script src="/Scripts/d3/d3tooltip.js"></script>
+<script src="/Scripts/topaz/controllers/AssetUtilizationEventsController.js"></script>
+
+<div class="alert alert-info" id="nodataselection" ng-if="!applyFilterClicked">
+    <button data-dismiss="alert" class="close" type="button">×</button>
+    <strong>Please make a data selection and click apply filters button in order to view page information.</strong>
+</div>
+
+
+
+
+<div id="inventory" ng-show="applyFilterClicked">
+    <topaz-section name="summary" header="Inventory information" loading="!inventorySummaryStatistics || !inventoryCount || !inventoryAssets">
+
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-4">
+                <table>
+                    <tr>
+                        <td class="text-top"><p>Asset count:&nbsp;</p></td>
+                        <td class="text-top"><p><span ng-bind="inventoryCount"></span></p></td>
+                    </tr>
+                    <tr>
+                        <td class="text-top" colspan="2">
+                            <p>
+                                Inventory average record <span topaz-definition="Consistency">consistency</span>: {{ 100 * inventorySummaryStatistics.averageRecordConsistency | percent }}
+                                <topaz-definition term="Consistency" glyphicon="question-sign"></topaz-definition>
+                                <br />
+                                <topaz-link node="assetsystemrecordconsistency" params="{{ currentParameters }}">Full record consistency detail</topaz-link>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-top"><p>Ownership:&nbsp;</p></td>
+                        <td class="text-top">
+                            <table id="OwnershipTable">
+                                <tbody>
+                                    <tr ng-repeat="organization in inventorySummaryStatistics.ownershipPercentages">
+                                        <td>{{organization.Value * 100 | percent}}</td>
+                                        <td><span class="label {{organization.Key.toLowerCase().split(' ')[0]}}Color" style="margin-right: 10px;">{{organization.Key}}</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-top"><p>Location:&nbsp;</p></td>
+                        <td class="text-top">
+                            <table id="LocationTable">
+                                <tbody>
+                                    <tr ng-repeat="location in inventorySummaryStatistics.locationPercentages">
+                                        <td>{{location.Value * 100 | percent}}</td>
+                                        <td><span>{{location.Key}}</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr id="WeightSection">
+                        <td class="text-top">Asset weights:</td>
+                        <td class="text-top" ng-if="inventorySummaryStatistics.maxWeight">
+                            <p class="text-top" style="display: inline; padding-right: 8px;">{{ inventorySummaryStatistics.minWeight }} - {{ inventorySummaryStatistics.maxWeight }} lb</p>
+                            <div id="NotAllowedPerson" class="notallowed-container" topaz-definition="Unsafe-Lift-1" ng-if="inventorySummaryStatistics.maxWeight >= 35.0">
+                                <object data="/Content/Images/person.svg" type="image/svg+xml" style="display: block; margin: 0 auto;"></object>
+                                <object data="/Content/Images/notallowed.svg" type="image/svg+xml" style="position: absolute; right:0;left:0;top:0;bottom:0;"></object>
+                            </div>
+                            <div id="NotAllowedPeople" class="notallowed-container" topaz-definition="Unsafe-Lift-2" ng-if="inventorySummaryStatistics.maxWeight >= 48.0">
+                                <object data="/Content/Images/people.svg" type="image/svg+xml" style="display: block; margin: 0 auto;"></object>
+                                <object data="/Content/Images/notallowed.svg" type="image/svg+xml" style="position: absolute; right:0;left:0;top:0;bottom:0;"></object>
+                            </div>
+                            <div id="CheckMarkPerson" class="checkmark-container" topaz-definition="Safe-Lift-1" ng-if="inventorySummaryStatistics.maxWeight < 35.0">
+                                <object data="/Content/Images/person.svg" type="image/svg+xml" style="display: block; margin: 0 auto;"></object>
+                                <object data="/Content/Images/checkmark.svg" type="image/svg+xml" style="position: absolute; right:-15px;top:0;"></object>
+                            </div>
+                            <div id="CheckMarkPeople" class="checkmark-container" topaz-definition="Safe-Lift-2" ng-if="inventorySummaryStatistics.maxWeight < 48.0">
+                                <object data="/Content/Images/people.svg" type="image/svg+xml" style="display: block; margin: 0 auto;"></object>
+                                <object data="/Content/Images/checkmark.svg" type="image/svg+xml" style="position: absolute; right:-15px;top:0;"></object>
+                            </div>
+                            <div id="CheckMarkForklift" class="checkmark-container forklift-container" topaz-definition="Safe-Lift-M">
+                                <object data="/Content/Images/forklift.svg" type="image/svg+xml" style="display: block; margin: 0 auto;"></object>
+                                <object data="/Content/Images/checkmark.svg" type="image/svg+xml" style="position: absolute; right:-10px;top:0;"></object>
+                            </div>
+                        </td>
+                        <td class="text-top" ng-hide="inventorySummaryStatistics.maxWeight">
+                            <p>unknown</p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-md-5 accelerated" style="max-width: 785px;">
+                <topaz-asset-map ng-model="mapModels.map" data="mapModels.mapData"></topaz-asset-map>
+            </div>
+
+            <div id="model-image" class="col-xs-12 col-sm-6 col-md-3 pull-right centered-horizontal">
+                <!-- reserved for future use -->
+            </div>
+        </div>
+    </topaz-section>
+
+    <topaz-section name="deployability" header="Inventory deployability: {{ deployability.overallDeployability | percent }}" loading="!deployability">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="alert alert-info skinny" id="SetBuildingAlert" ng-if="!!deployability && !user.latitude">
+                    <button data-dismiss="alert" class="close" type="button">×</button>
+                    <strong>Set your building on the <topaz-link node="settings" title="Settings page"></topaz-link> to calculate the location <span topaz-definition="Deployability">deployability</span> component.</strong>
+                </div>
+                <table>
+                    <tr>
+                        <td>Organization component:</td>
+                        <td><span ng-bind="deployability.organizationComponent | percent"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Location component:</td>
+                        <td ng-if="deployability.locationComponent || deployability.locationComponent === 0"><span ng-bind="deployability.locationComponent | percent"></span></td>
+                        <td ng-if="!deployability.locationComponent && deployability.locationComponent !== 0">(unknown)</td>
+                    </tr>
+                    <tr>
+                        <td>Asset status component:</td>
+                        <td><span ng-bind="deployability.assetStatusComponent | percent"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Record update component:</td>
+                        <td><span ng-bind="deployability.recordUpdateComponent | percent"></span></td>
+                    </tr>
+                </table>
+
+                <topaz-table data="deployability.table"
+                             headers="{
+                                    'assetId': 'AssetID',
+                                    'capitalFlag': 'Expenditure Type',
+                                    'overallDeployability': 'Overall Deployability',
+                                    'manufacturer': 'Manufacturer',
+                                    'model': 'Model No',
+                                    'statusComponent': 'Status Component',
+                                    'propertyStatus': 'Asset Status',
+                                    'organizationComponent': 'Organization Component',
+                                    'accountingDepartment': 'Department',
+                                    'building': 'Building',
+                                    'locationComponent': 'Location Component',
+                                    'recordUpdateComponent': 'Record Update Component',
+                                    'recordUpdateDate': 'Record Update Date',
+                                }"
+                             title="Asset deployability list"
+                             pagination="true"
+                             page-size="5"
+                             search="true"
+                             default-selection="OverallDeployability"
+                             default-order="desc"
+                             export-url="InventoryDeployabilitySummary">
+                </topaz-table>
+            </div>
+        </div>
+    </topaz-section>
+
+    <topaz-section name="organizationDistribution" header="Distribution by organization" loading="!inventoryStatusCounts">
+        <div class="row">
+            <div class="col-xs-12">
+                <topaz-par-chart data="inventoryStatusCounts.organization"
+                                 drilldown-data="organizationUrls"
+                                 show-pie-chart="true"
+                                 prefix="organization"
+                                 tooltips="statusTooltips"
+                                 callback-fn="goFilter.submit()">
+                </topaz-par-chart>
+            </div>
+        </div>
+    </topaz-section>
+
+    <topaz-section name="locationDistribution" header="Distribution by location" loading="!inventoryStatusCounts">
+        <div class="row">
+            <div class="col-xs-12">
+                <topaz-par-chart data="inventoryStatusCounts.location"
+                                 drilldown-data="locationUrls"
+                                 show-pie-chart="true"
+                                 prefix="location"
+                                 tooltips="statusTooltips"
+                                 callback-fn="goFilter.submit()">
+                </topaz-par-chart>
+            </div>
+        </div>
+    </topaz-section>
+
+    <topaz-section name="commonality" header="Inventory commonality: {{ commonality.overall | percent }}" info="{{terms['Commonality'].definition}}" info-link="/About/Data#synthesis" loading="!commonality">
+        <div class="row col-xs-12">
+            <table>
+                <tr>
+                    <td>Organization component:</td>
+                    <td><span ng-bind="commonality.organizationComponent | percent"></span></td>
+                </tr>
+                <tr>
+                    <td>Location component:</td>
+                    <td><span ng-bind="commonality.locationComponent | percent"></span></td>
+                </tr>
+                <tr>
+                    <td>Calibration component:</td>
+                    <td><span ng-bind="commonality.calibrationComponent | percent"></span></td>
+                </tr>
+            </table>
+        </div>
+    </topaz-section>
+
+    <topaz-section name="rm" header="Repair & maintenance" loading="!cmisRm">
+        <div>
+            <topaz-section header="CMIS SOOTs" closed>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>
+                            <span ng-bind="cmisRm.sootCount"></span> <span topaz-definition="SOOT">SOOTs</span> out of {{ cmisRm.numCalibrations }} calibrations for this inventory since {{ fiveYearsAgo }} <br />
+                            <span ng-bind="sootCountPerAssetPerMonth | number:2 "></span> <span topaz-definition="SOOT">SOOTs</span> per asset per month
+                        </p>
+                        <topaz-table data="cmisRm.sootIncidents"
+                                     headers="{
+                                        assetId: 'Asset ID',
+                                        serviceDate: 'Date',
+                                        model: 'Model No',
+                                        manufacturer: 'Manufacturer',
+                                        bu: 'BU',
+                                        home: 'Home',
+                                        department: 'Department',
+                                        building: 'Building',
+                                        custodian: 'Custodian',
+                                     }"
+                                     title="CMIS SOOT Incidents"
+                                     search="true"
+                                     pagination="true"
+                                     page-size="5"
+                                     wide="false"
+                                     condensed="true">
+                        </topaz-table>
+                    </div>
+                </div>
+            </topaz-section>
+            <topaz-section header="CMIS repairs" closed>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>
+                            <span ng-bind="cmisRm.repairCount"></span> repairs for this inventory since {{ fiveYearsAgo }}<br />
+                            <span ng-bind="repairCountPerAssetPerMonth | number:2 "></span> repairs per asset per month<br />
+                            <span ng-bind="repairHoursPerAssetPerMonth | number:2 "></span> repair hours per asset per month
+                        </p>
+                        <topaz-table data="cmisRm.repairIncidents"
+                                     headers="{
+                                        assetId: 'Asset ID',
+                                        totalHours: 'Repair Hours',
+                                        dateCompAct: 'Date',
+                                        model: 'Model No',
+                                        manufacturer: 'Manufacturer',
+                                        bu: 'BU',
+                                        home: 'Home',
+                                        department: 'Department',
+                                        building: 'Building',
+                                        custodian: 'Custodian',
+                                     }"
+                                     title="CMIS repairs"
+                                     search="true"
+                                     pagination="true"
+                                     page-size="5"
+                                     wide="false"
+                                     condensed="true">
+                        </topaz-table>
+                    </div>
+                </div>
+            </topaz-section>
+        </div>
+    </topaz-section>
+
+    <div id='child' ng-controller="AssetUtilizationEventsController">
+
+        <topaz-section header="Utilization information: {{ eventCount | number }} events for {{ assetCount | number }} assets" loading="!assetEventDonut || !assetEvents">
+            <div class="row">
+
+                <div class="col-xs-12 col-md-4 text-center">
+                    <topaz-donut-chart @*ng-model="donuts.inUse"*@
+                                       data="inUseDonutData"
+                                       label="inUseDonutLabel"
+                                       slice-labels="false"
+                                       value-formatter="percentFormatter"
+                                       tooltip-value-formatter="donutTooltip"
+                                       classes="inUseClasses">
+                    </topaz-donut-chart>
+                </div>
+                <div class="col-xs-12 col-md-4 text-center">
+                    <topaz-donut-chart @*ng-model="donuts.available"*@
+                                       data="availableDonutData"
+                                       label="availableDonutLabel"
+                                       slice-labels="false"
+                                       value-formatter="percentFormatter"
+                                       tooltip-value-formatter="donutTooltip"
+                                       classes="availableClasses">
+                    </topaz-donut-chart>
+                </div>
+
+                <div ng-if="eventCount > 0" class="col-xs-12 col-md-4">
+                    <h4 style="margin-bottom: 20px;">Utilization for assets{{ dataSelectionHeader.length > 0 ? ' of ' + dataSelectionHeader : '' }} since {{ fiveYearsAgo }}</h4>
+                    <ul>
+                        <li>Average time in use: {{ stats.averageDaysInUse | number:2 }} days</li>
+                        <li>Average time not in use: {{ stats.averageDaysNotInUse | number:2 }} days</li>
+                        <li>Average percent in use: {{ stats.averagePercentInUse | percent }}</li>
+                        <li>Average time available: {{ stats.averageDaysAvailable | number:2 }} days</li>
+                        <li>Average time not available: {{ stats.averageDaysNotAvailable | number:2 }} days</li>
+                        <li>Average percent available: {{ stats.averagePercentAvailable | percent }}</li>
+                    </ul>
+                </div>
+            </div>
+            <div ng-show="eventCount == 0" class="row col-xs-12">
+                <div class="alert alert-info">
+                    <button data-dismiss="alert" class="close" type="button">×</button>
+                    <strong ng-bind="noDataAlertText"></strong>
+                </div>
+            </div>
+            <div class="row col-xs-12">
+                <topaz-link node="utilization.events.asset" params="{{ currentParameters }}">Additional utilization information</topaz-link>
+            </div>
+            <div>
+                <topaz-section closed header="Recent utilization events">
+                    <div class="row col-xs-12">
+                        <topaz-table data="assetEvents"
+                                     headers="{'assetId':'Asset ID', 'serialNo':'Serial No', 'manufacturer':'Manufacturer', 'model':'Model', 'organization':'Organization', 'location':'Location', 'eventType':'Event Type','eventStart':'Event start' ,'eventDuration':'Event duration','inUse':'In use','available':'Available'}"
+                                     pagination="true"
+                                     page-size="10"
+                                     search="true"
+                                     sort-functions="{'EventStart': dateSorter}"
+                                     default-order="asc"
+                                     special-formatting="utilizationFormatter">
+                        </topaz-table>
+                    </div>
+                </topaz-section>
+            </div>
+        </topaz-section>
+    </div>
+
+    <topaz-section name="assets" header="Asset list" loading="!inventoryAssets || !inventoryAssetsRows">
+        <div class="row">
+            <div class="col-xs-12">
+                <p ng-if="inventoryAssetsRows > 10000"> Displaying 10,000 of {{inventoryAssetsRows}} rows that matched the search.</p>
+                <topaz-table data="inventoryAssets"
+                             headers="{
+                                assetId: 'AssetID',
+                                serialNo: 'SerialNo',
+                                manufacturer: 'Manufacturer',
+                                model: 'Model No',
+                                noun: 'Model Desc',
+                                commonality: 'Model commonality',
+                                propertyStatus: 'Asset Status',
+                                weight: 'Weight',
+                                dateWorkNext: 'Calibration Due date',
+                                custodian: 'Custodian',
+                                department: 'Department',
+                                building: 'Building',
+                            }"
+                             pagination="true"
+                             page-size="20"
+                             search="true">
+                </topaz-table>
+            </div>
+        </div>
+    </topaz-section>
+    <topaz-section name="ComCat" header="Common Catalog" ng-if="ccData.Count > 0 || ccData.Count == null" loading="!ccData">
+        <div class="row">
+            <div class="col-xs-12">
+                <topaz-table data="ccData.table"
+                             headers="{
+                                assetid: 'AssetID',
+                                companyname: 'Manufacturer',
+                                modelno: 'ModelNo',
+                                familytype: 'Family Type',
+                                classtype: 'Class Type',
+                                subclasstype: 'Subclass Type',
+                                detailtype: 'Detail Type',
+                                specstable: 'Specifications',
+                                replacementmodels: 'Replacement Models',
+                            }"
+                             pagination="true"
+                             page-size="20"
+                             search="true">
+                </topaz-table>
+            </div>
+        </div>
+    </topaz-section>
+    <topaz-section>
+        <div class="row">
+            <div class="col-xs-12">
+                <p>
+                    This page displays information about an inventory of assets, specified by the selected organization, location, and custodian.
+                    Information for 10,000 items in the asset inventory is shown on this page.
+                    Information for the full asset inventory is given in the raw data export at the bottom of this page.
+                </p>
+                <p>
+                    If the filters for the data selection narrow it down to a single model, information specific to this model (across all manufacturers or for a selected manufacturer) is displayed.
+                </p>
+            </div>
+        </div>
+    </topaz-section>
+
+</div>
+

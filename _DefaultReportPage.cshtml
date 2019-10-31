@@ -1,0 +1,417 @@
+﻿@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+    ViewContext.ViewBag.DefaultReportPage = true;
+}
+
+@section AboveAlerts {
+    @if (ViewContext.ViewBag.AngularController != null) {
+        @Html.Raw("<script src=\"/Scripts/topaz/controllers/" + ViewContext.ViewBag.AngularController + ".js\"></script>")
+        @Html.Raw("<div ng-controller=\"" + ViewContext.ViewBag.AngularController + "\">")
+    }
+
+    @RenderSection("PreSelectionBoxes", false)
+    <div class="alert alert-danger" ng-if="orgLocSelections[0].hierarchy.validParameter === false">
+        <button data-dismiss="alert" class="close" type="button">×</button>
+        <strong>The organgization selection is not valid, please make a new selection. </strong>
+    </div>
+    <div class="alert alert-danger" ng-if="orgLocSelections[1].hierarchy.validParameter === false">
+        <button data-dismiss="alert" class="close" type="button">×</button>
+        <strong>The location selection is not valid, please make a new selection. </strong>
+    </div>
+    <div class="alert alert-danger" ng-if="employeeDropdownSelection.hierarchy.validParameter === false">
+        <button data-dismiss="alert" class="close" type="button">×</button>
+        <strong>The employee selection is not valid, please make a new selection. </strong>
+    </div>
+    <div class="alert alert-danger" ng-if="departmentDropdownSelection.hierarchy.validParameter === false">
+        <button data-dismiss="alert" class="close" type="button">×</button>
+        <strong>The HR department selection is not valid, please make a new selection. </strong>
+    </div>
+    <topaz-section header="Data Selection{{ dataSelectionHeader.length > 0 ? ':' : ''}} {{dataSelectionHeader}}">
+        @RenderSection("ApplyFilterButton", false)
+        <div class="row" style="position: relative;">
+            <div class="col-xs-12 col-sm-4 col-md-3" ng-repeat="dropdownList in orgLocSelections track by $index" ng-if="getSelectionBox(dropdownList.type).visible">
+                <topaz-selection-box data="dropdownList" disabled="getSelectionBox(dropdownList.type).disabled" title="{{ dropdownList.hierarchy.type }}" loading-property="!dropdownList.hierarchy || !dropdownList.cds"
+                                     info="{{dropdownList.info}}" info-link="/About/DataSelectionContents">
+                    <header>
+                        <column>
+                            <img ng-show="dropdownList.hierarchy.dropdowns[0].selectedIndex > 0" src="/Content/Images/funnel-arrow-090-medium.png" ng-click="upFilter(dropdownList.hierarchy.type)" />
+                            <img ng-show="dropdownList.hierarchy.dropdowns[0].selectedIndex == 0" src="/Content/Images/funnel-arrow-090-medium_inactive.png" />
+                        </column>
+                        <column>
+                            <img ng-show="dropdownList.hierarchy.dropdowns[0].selectedIndex > 0" src="/Content/Images/funnel--cross-custom.png" ng-click="removeFilter(dropdownList.hierarchy.dropdowns[0])" />
+                            <img ng-show="dropdownList.hierarchy.dropdowns[0].selectedIndex == 0" src="/Content/Images/funnel--cross-custom_inactive.png" />
+                        </column>
+                    </header>
+                    <row>
+                        <column colspan="3" style="text-align: center;">
+                            <span>Standard drilldown <info>{{dropdownList.standardInfo}}</info></span>
+                        </column>
+                    </row>
+                    <row ng-repeat="dropdown in dropdownList.hierarchy.dropdowns track by dropdown.tierTitle" ng-init="active = dropdown.selectedIndex > 0 && dropdown.enabled">
+                        <column style="text-align: right;">
+                            {{ dropdown.tierTitle }}:
+                        </column>
+
+                        <column>
+                            <topaz-dropdown-selection data="dropdown.values" ng-model="dropdown" default-selection="dropdown.selection" ng-disabled="!dropdown.enabled" on-change="dropdownChanged(dropdown.type)" styles="{ width: '100%' }"></topaz-dropdown-selection>
+                        </column>
+                        <column>
+                            <img ng-show="active" src="/Content/Images/funnel--minus.png" ng-click="removeFilter(dropdown)" />
+                            <img ng-show="!active" src="/Content/Images/funnel--minus_inactive.png" />
+
+                        </column>
+
+
+                    </row>
+
+
+                    <row>
+                        <column>
+                            <span>{{ dropdownList.hierarchy.type }} lookup:</span>
+                        </column>
+                        <column>
+
+                            <div ng-show="dropdownList.hierarchy.type.indexOf('Organization') !== -1">
+                                <angucomplete-alt id="{{ dropdownList.hierarchy.type }}-search" placeholder="Search {{ dropdownList.hierarchy.type }}" class="autocomplete-input" maxlength="100" pause="500" remote-url="/API/SearchDatabase?Type={{ dropdownList.hierarchy.type }}&Search="
+                                                  search-fields="search,description" title-field="description" minlength="1" input-class="form-control form-control-small" valid-match="selectedModels.validBuilding" valid-input="selectedModels.building" ng-keydown="onEnter($event, organizationAutocompleteEnter)"
+                                                  match-class="searchHighlight" selected-object="selectedModels.organizationSelected" input-changed="selectedModels.updateOrganizations" initial-value="selectedModels.selectedOrganization" remote-url-response-formatter="selectedModels.formatData" show-on-focus></angucomplete-alt>
+                            </div>
+
+                            <div ng-show="dropdownList.hierarchy.type.indexOf('Location') !== -1">
+                                <angucomplete-alt id="{{ dropdownList.hierarchy.type }}-search" placeholder="Search {{ dropdownList.hierarchy.type }}" class="autocomplete-input" maxlength="100" pause="500" remote-url="/API/SearchDatabase?Type={{ dropdownList.hierarchy.type }}&Search="
+                                                  search-fields="search,description" title-field="description" minlength="1" input-class="form-control form-control-small" valid-match="selectedModels.validBuilding" valid-input="selectedModels.building" ng-keydown="onEnter($event, locationAutocompleteEnter)"
+                                                  match-class="searchHighlight" selected-object="selectedModels.locationSelected" input-changed="selectedModels.updateLocations" initial-value="selectedModels.selectedLocation" remote-url-response-formatter="selectedModels.formatData" show-on-focus></angucomplete-alt>
+                            </div>
+
+                        </column>
+                    </row>
+
+
+
+
+                    <hr ng-show="getSelectionBox(dropdownList.type).cds !== false" />
+                    <row ng-show="getSelectionBox(dropdownList.type).cds !== false">
+                        <column colspan="3" style="text-align: center;">
+                            <span>Custom data selection <info>{{dropdownList.cdsInfo}}</info></span>
+                        </column>
+                    </row>
+                    <row ng-show="getSelectionBox(dropdownList.type).cds !== false">
+                        <column style="text-align: right;">
+                            Custom selection:
+                        </column>
+                        <column colspan="2">
+                            <topaz-dropdown-selection labels="dropdownList.cds.labels" values="dropdownList.cds.values" ng-model="dropdownList.cds" default-selection="dropdownList.cds.selection" ng-disabled="getSelectionBox(dropdownList.type).cds === false" on-change="cdsChanged(dropdownList.hierarchy.type)" styles="{ width: '100%' }"></topaz-dropdown-selection>
+                        </column>
+                    </row>
+
+
+                </topaz-selection-box>
+            </div>
+            <div class="col-xs-12 col-sm-4 col-md-3" ng-if="employeeSelectionBox.visible">
+                <topaz-selection-box data="employeeDropdownSelection" disabled="employeeSelectionBox.disabled" title="{{ employeeDropdownSelection.hierarchy.type }}" loading-property="!employeeDropdownSelection.hierarchy || !employeeDropdownSelection.cds"
+                                     info="{{employeeDropdownSelection.info}}" info-link="/About/DataSelectionContents">
+                    <header>
+                        <column>
+                            <img ng-show="employeeDropdownSelection.hierarchy.dropdowns[0].selectedIndex > 0" src="/Content/Images/funnel-arrow-090-medium.png" ng-click="upFilter(employeeDropdownSelection.hierarchy.type, false)" />
+                            <img ng-show="employeeDropdownSelection.hierarchy.dropdowns[0].selectedIndex == 0" src="/Content/Images/funnel-arrow-090-medium_inactive.png" />
+                        </column>
+                        <column>
+                            <img ng-show="employeeDropdownSelection.hierarchy.dropdowns[0].selectedIndex > 0" src="/Content/Images/funnel--cross-custom.png" ng-click="removeFilter(employeeDropdownSelection.hierarchy.dropdowns[0], false)" />
+                            <img ng-show="employeeDropdownSelection.hierarchy.dropdowns[0].selectedIndex == 0" src="/Content/Images/funnel--cross-custom_inactive.png" />
+                        </column>
+                    </header>
+                    <row>
+                        <column colspan="3" style="text-align: center;">
+                            <span>Standard drilldown <info>{{employeeDropdownSelection.standardInfo}}</info></span>
+                        </column>
+                    </row>
+                    <row>
+                        <column style="text-align: right;">
+                            CEO:
+                        </column>
+                        <column style="text-align: left;">
+                            Dennis Muilenburg
+                        </column>
+                        <column>
+                        </column>
+                    </row>
+                    <row ng-repeat="dropdown in employeeDropdownSelection.hierarchy.dropdowns track by dropdown.tierTitle" ng-init="active = dropdown.selectedIndex > 0 && dropdown.enabled">
+                        <column style="text-align: right;">
+                            {{ dropdown.tierTitle }}:
+                        </column>
+                        <column>
+                            <topaz-dropdown-selection data="dropdown.values" labels="dropdown.labels" ng-model="dropdown" default-selection="dropdown.selection" ng-disabled="!dropdown.enabled" on-change="dropdownChanged(dropdown.type)" styles="{ width: '100%' }"></topaz-dropdown-selection>
+                        </column>
+                        <column>
+                            <img ng-show="active" src="/Content/Images/funnel--minus.png" ng-click="removeFilter(dropdown, false)" />
+                            <img ng-show="!active" src="/Content/Images/funnel--minus_inactive.png" />
+                        </column>
+                    </row>
+                    <row>
+                        <column></column>
+                        <column style="text-align: right;">Include reports</column>
+                        <column><input type="checkbox" ng-disabled="employeeDropdownSelection.hierarchy.dropdowns.length == 1" ng-model="employeeDropdownSelection.includeReports" ng-click="toggleIncludeReports('Employee')" /></column>
+                    </row>
+                    <hr />
+                    <row>
+                        <column>
+                            Employee lookup:
+                        </column>
+                        <column>
+                            <angucomplete-alt id="employee-search" placeholder="Search employee" class="autocomplete-input" maxlength="100" pause="500" remote-url="/API/SearchDatabase?Type=Employee&Search=" ng-click="clearDefaultInput('Employee')"
+                                              search-fields="search,description" title-field="description" minlength="1" input-class="form-control form-control-small" valid-match="selectedModels.validBuilding" valid-input="selectedModels.building" ng-keydown="onEnter($event, employeeAutocompleteEnter)"
+                                              match-class="searchHighlight" selected-object="selectedModels.employeeSelected" input-changed="selectedModels.updateEmployees" initial-value="selectedModels.selectedEmployee" remote-url-response-formatter="selectedModels.formatData" show-on-focus></angucomplete-alt>
+                        </column>
+                        <column>
+                            <a ng-href="https://insite.web.rdgcorp.com/culture/displayBluesInfo.do?bemsid={{inSiteBems}}" target="_blank"><img src="~/Content/Images/insite.gif" /></a>
+                        </column>
+                    </row>
+                    <hr ng-show="employeeSelectionBox.cds !== false" />
+                    <row ng-show="employeeSelectionBox.cds !== false">
+                        <column colspan="3" style="text-align: center;">
+                            <span>Custom data selection <info>{{employeeDropdownSelection.cdsInfo}}</info></span>
+                        </column>
+                    </row>
+                    <row ng-show="employeeSelectionBox.cds !== false">
+                        <column style="text-align: right;">
+                            Custom selection:
+                        </column>
+                        <column colspan="2">
+                            <topaz-dropdown-selection values="employeeDropdownSelection.cds.values" labels="employeeDropdownSelection.cds.labels" ng-model="employeeDropdownSelection.cds" default-selection="employeeDropdownSelection.cds.selection" ng-disabled="employeeSelectionBox.cds === false" on-change="cdsChanged(employeeDropdownSelection.hierarchy.type)" styles="{ width: '100%' }"></topaz-dropdown-selection>
+                        </column>
+                    </row>
+                </topaz-selection-box>
+            </div>
+            <div class="col-xs-12 col-sm-4 col-md-3" ng-if="departmentSelectionBox.visible">
+                <topaz-selection-box data="departmentDropdownSelection" disabled="departmentSelectionBox.disabled" title="{{ departmentDropdownSelection.hierarchy.type }}" loading-property="!departmentDropdownSelection.hierarchy || !departmentDropdownSelection.cds"
+                                     info="{{departmentDropdownSelection.info}}" info-link="/About/DataSelectionContents">
+                    <header>
+                        <column>
+                            <img ng-show="departmentDropdownSelection.hierarchy.dropdowns[0].selectedIndex > 0" src="/Content/Images/funnel-arrow-090-medium.png" ng-click="upFilter(departmentDropdownSelection.hierarchy.type, false)" />
+                            <img ng-show="departmentDropdownSelection.hierarchy.dropdowns[0].selectedIndex == 0" src="/Content/Images/funnel-arrow-090-medium_inactive.png" />
+                        </column>
+                        <column>
+                            <img ng-show="departmentDropdownSelection.hierarchy.dropdowns[0].selectedIndex > 0" src="/Content/Images/funnel--cross-custom.png" ng-click="removeFilter(departmentDropdownSelection.hierarchy.dropdowns[0], false)" />
+                            <img ng-show="departmentDropdownSelection.hierarchy.dropdowns[0].selectedIndex == 0" src="/Content/Images/funnel--cross-custom_inactive.png" />
+                        </column>
+                    </header>
+                    <row>
+                        <column colspan="3" style="text-align: center;">
+                            <span>Standard drilldown <info>{{departmentDropdownSelection.standardInfo}}</info></span>
+                        </column>
+                    </row>
+                    <row ng-repeat="dropdown in departmentDropdownSelection.hierarchy.dropdowns track by dropdown.tierTitle" ng-init="active = dropdown.selectedIndex > 0 && dropdown.enabled">
+                        <column style="text-align: right;">
+                            {{ dropdown.tierTitle }}:
+                        </column>
+                        <column>
+                            <topaz-dropdown-selection data="dropdown.values" labels="dropdown.labels" ng-model="dropdown" default-selection="dropdown.selection" ng-disabled="!dropdown.enabled" on-change="dropdownChanged(dropdown.type)" styles="{ width: '100%' }"></topaz-dropdown-selection>
+                        </column>
+                        <column>
+                            <img ng-show="active" src="/Content/Images/funnel--minus.png" ng-click="removeFilter(dropdown, false)" />
+                            <img ng-show="!active" src="/Content/Images/funnel--minus_inactive.png" />
+                        </column>
+                    </row>
+                    <row>
+                        <column></column>
+                        <column style="text-align: right;">Include reports</column>
+                        <column><input type="checkbox" ng-disabled="departmentDropdownSelection.hierarchy.dropdowns.length == 1" ng-model="departmentDropdownSelection.includeReports" ng-click="toggleIncludeReports('Department')" /></column>
+                    </row>
+                    <hr />
+                    <row>
+                        <column>
+                            Department or manager lookup:
+                        </column>
+                        <column>
+                            <angucomplete-alt id="hr-search" placeholder="Search HR dept" class="autocomplete-input" maxlength="100" pause="500" remote-url="/API/SearchDatabase?Type=HR&Search=" ng-click="clearDefaultInput('Hr')"
+                                              search-fields="search,description" title-field="description" minlength="1" input-class="form-control form-control-small" valid-match="selectedModels.validBuilding" valid-input="selectedModels.building" ng-keydown="onEnter($event, hrAutocompleteEnter)"
+                                              match-class="searchHighlight" selected-object="selectedModels.hrSelected" input-changed="selectedModels.updateHrs" initial-value="selectedModels.selectedHr" remote-url-response-formatter="selectedModels.formatData" show-on-focus></angucomplete-alt>
+                        </column>
+                        <column>
+                        </column>
+                    </row>
+                    <hr ng-show="departmentSelectionBox.cds !== false" />
+                    <row ng-show="departmentSelectionBox.cds !== false">
+                        <column colspan="3" style="text-align: center;">
+                            <span>Custom data selection <info>{{departmentDropdownSelection.cdsInfo}}</info></span>
+                        </column>
+                    </row>
+                    <row ng-show="departmentSelectionBox.cds !== false">
+                        <column style="text-align: right;">
+                            Custom selection:
+                        </column>
+                        <column colspan="2">
+                            <topaz-dropdown-selection values="departmentDropdownSelection.cds.values" labels="departmentDropdownSelection.cds.labels" ng-model="departmentDropdownSelection.cds" default-selection="departmentDropdownSelection.cds.selection" ng-disabled="departmentSelectionBox.cds === false" on-change="cdsChanged(departmentDropdownSelection.hierarchy.type)" styles="{ width: '100%' }"></topaz-dropdown-selection>
+                        </column>
+                    </row>
+                </topaz-selection-box>
+            </div>
+            <div ng-if="dateRangeSelectionBox.visible" class="col-xs-12 col-sm-4 col-md-3">
+                <topaz-selection-box data="dateRangeSelectionBox" disabled="dateRangeSelectionBox.disabled" title="Date range" loading-property="!dateRangeSelectionBox.range">
+                    <row>
+                        <column style="text-align: right;">
+                            Presets:
+                        </column>
+                        <column>
+                            <topaz-dropdown-selection id="test2" data="dateRangeSelectionBox.presets.values" ng-model="dateRangeSelectionBox.presets" default-selection="dateRangeSelectionBox.range.preset" ng-disabled="!dateRangeSelectionBox.presets.enabled" on-change="dateRangeSelectionBox.change" styles="{ width: '100%' }"></topaz-dropdown-selection>
+                        </column>
+                    </row>
+                    <hr />
+                    <row>
+
+                        <column style="text-align: right;">
+                            Start date:
+                        </column>
+                        <column>
+                            <topaz-datepicker id="startdate" default-value="dateRangeSelectionBox.range.start"></topaz-datepicker>
+                        </column>
+                    </row>
+                    <row>
+                        <column style="text-align: right;">
+                            End date:
+                        </column>
+                        <column>
+                            <topaz-datepicker id="enddate" default-value="dateRangeSelectionBox.range.end"></topaz-datepicker>
+                        </column>
+                    </row>
+                    <row>
+                        <column>
+                        </column>
+                        <column style="text-align: right;">
+                            <button id="btn777" class="btn btn-default btn-xs" ng-click="dateRangeSelectionBox.submit('clicked')" ng-show="dateRangeSubmitVisible">Submit</button>
+                        </column>
+                    </row>
+
+                </topaz-selection-box>
+
+            </div>
+
+
+
+            <div class="col-xs-12 col-sm-4 col-md-3" ng-if="scannerLocationDropdownSelection">
+                <topaz-selection-box data="scannerLocationDropdownSelection" disabled="scannerLocationSelectionBox.disabled" title="Scanner Location" loading-property="!scannerLocationDropdownSelection.hierarchy || !scannerLocationDropdownSelection.cds">
+                    <header>
+                        <column>
+                            <img ng-show="scannerLocationDropdownSelection.hierarchy.dropdowns[0].selectedIndex > 0" src="/Content/Images/funnel-arrow-090-medium.png" ng-click="scannerLocationUpFilter(scannerLocationDropdownSelection.hierarchy.type, false)" />
+                            <img ng-show="scannerLocationDropdownSelection.hierarchy.dropdowns[0].selectedIndex == 0" src="/Content/Images/funnel-arrow-090-medium_inactive.png" />
+                        </column>
+                        <column>
+                            <img ng-show="scannerLocationDropdownSelection.hierarchy.dropdowns[0].selectedIndex > 0" src="/Content/Images/funnel--cross-custom.png" ng-click="scannerLocationRemoveFilter(scannerLocationDropdownSelection.hierarchy.dropdowns[0], false)" />
+                            <img ng-show="scannerLocationDropdownSelection.hierarchy.dropdowns[0].selectedIndex == 0" src="/Content/Images/funnel--cross-custom_inactive.png" />
+                        </column>
+                    </header>
+                    <row>
+                        <column colspan="3" style="text-align: center;">
+                            Standard drilldown
+                        </column>
+                    </row>
+                    <row ng-repeat="dropdown in scannerLocationDropdownSelection.hierarchy.dropdowns" ng-init="active = dropdown.selectedIndex > 0 && dropdown.enabled">
+                        <column style="text-align: right;">
+                            {{ dropdown.tierTitle }}:
+                        </column>
+                        <column>
+                            <topaz-dropdown-selection data="dropdown.values" labels="dropdown.labels" ng-model="dropdown" default-selection="dropdown.selection" ng-disabled="!dropdown.enabled" on-change="scannerLocationChanged" styles="{ width: '100%' }"></topaz-dropdown-selection>
+                        </column>
+                        <column>
+                            <img ng-show="active" src="/Content/Images/funnel--minus.png" ng-click="scannerLocationRemoveFilter(dropdown, false)" />
+                            <img ng-show="!active" src="/Content/Images/funnel--minus_inactive.png" />
+                        </column>
+                    </row>
+                </topaz-selection-box>
+            </div>
+            @RenderSection("ExtraSelectionBoxes", false)
+        </div>
+    </topaz-section>
+}
+
+@RenderBody()
+
+<topaz-section header="Export data" ng-if="rawData.url">
+    
+
+    @if (ViewContext.ViewBag.AngularController != null && ViewContext.ViewBag.SystemSelect == true)
+    {
+        @Html.Raw(File.ReadAllText(Server.MapPath("~/Views/Shared/Modal/_rawDataModal.cshtml")))
+    }
+    @if(ViewContext.ViewBag.AngularController != null && (ViewContext.ViewBag.SystemSelect == null || ViewContext.ViewBag.SystemSelect == false))
+    {
+        @Html.Raw(File.ReadAllText(Server.MapPath("~/Views/Shared/_rawDataExportButton.cshtml")))
+    }
+</topaz-section>
+   
+
+
+
+@if (ViewContext.ViewBag.AngularController != null)
+{
+    @Html.Raw("</div>")
+}
+
+
+
+
+<script>
+        $(function () {
+                //trigger on date select of first datetimepicker
+           $("#startdate").datepicker(
+                {
+                    autoclose: true,
+                    showButtonPanel: true,
+
+                    onSelect: function () {
+                        $("#enddate").trigger("focus");
+                    },
+
+                    onClose: function () {
+                        $("#enddate").trigger("focus");
+                    },
+                });
+
+            $("#enddate").datepicker(
+                {
+                    autoclose: true,
+                    showButtonPanel: true,
+                    onSelect: function () {
+                        $("#btn777").trigger("focus");
+                    },
+                    onClose: function () {
+                        $("#btn777").trigger("focus");
+                    },
+                });
+
+            $(document).trigger("focus");
+
+
+            document.addEventListener("keydown", onKeyDown, true);
+
+            function onKeyDown(e) {
+
+                var key = e.which;
+
+                if (key == 13) // the enter key code
+                {
+                    //alert("from key down event");
+                    $("#btn777").trigger("click");
+                    return false;
+                }
+            };
+
+            $('#btn777').click(function () {
+                //alert('auto click button clicked...!');
+            });
+        });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

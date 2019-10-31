@@ -1,0 +1,181 @@
+﻿@{
+    ViewContext.ViewBag.Node = "petersen";
+    ViewContext.ViewBag.AngularController = "PetersenController";
+    Layout = "/Views/Shared/_DefaultReportPage.cshtml";
+}
+
+@section ApplyFilterButton
+{
+    <div>
+        <button id="btnfilter1" class="btn btn-default" ng-click="goFilter.submit()" ng-disabled="!applyFilterButtonEnabled" style="margin-left:15px;margin-bottom:20px">Apply Filters</button>
+    </div>
+}
+
+
+<div class="alert alert-info" id="nodataselection" ng-if="!applyFilterClicked">
+    <button data-dismiss="alert" class="close" type="button">×</button>
+    <strong>Please click apply filter button in order to view page information.</strong>
+</div>
+
+<topaz-section header="Footprint">
+    <div class="row">
+        <div class="col-xs-12 col-md-9 text-center">
+            <p>The charged footprint does not represent the actual costs billed, see <a href="#Explanation">this page's explanation</a> for more detail.</p>
+            <topaz-bar-chart data="footprintOrgData.chart"
+                             classes="{'Number of containers': 'info0', 'Physical footprint': 'info1', 'Charged footprint': 'info2'}"
+                             drilldown-data="organizationUrls"
+                             y-axis-labels="['Number of containers', 'Footprint (sqft)']"
+                             show-y-axis="true"
+                             show-totals="false"
+                             multiple-axes="true"
+                             type="stacked"
+                             height="300px"
+                             width="100%"
+                             max-width="1000"
+                             title="Storage footprint">
+            </topaz-bar-chart>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-md-9 text-center">
+            <topaz-table data="footprintOrgData.table"
+                         headers="{ 'organization': 'Organization',
+                                            'numberOfContainers': 'Number of containers',
+                                            'physicalFootprint': 'Physical footprint',
+                                            'chargedFootprint': 'Charged footprint'
+                                        }"
+                         pagination="false"
+                         calculate-totals="horizontal">
+            </topaz-table>
+        </div>
+    </div>
+</topaz-section>
+
+<topaz-section header="Storage duration">
+    <div class="row">
+        <div class="col-xs-12 col-md-9 text-center">
+            <topaz-bar-chart data="durationOrgData.chart"
+                             classes="{ 'Mean duration': 'info0',
+                                                        'Median duration': 'info1'
+                                            }"
+                             drilldown-data="organizationUrls"
+                             y-axis-labels="['Time (months)']"
+                             show-y-axis="true"
+                             show-totals="false"
+                             multiple-axes="true"
+                             type="stacked"
+                             height="300px"
+                             width="100%"
+                             max-width="1000"
+                             title="'Storage duration'">
+            </topaz-bar-chart>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 30px;">
+        <div class="col-xs-12 col-md-9 text-center">
+            <topaz-table data="durationOrgData.table"
+                         headers="{ 'organization': 'Organization',
+                                                    'meanDuration': 'Mean duration',
+                                                    'medianDuration': 'Median duration'
+                                            }"
+                         pagination="false">
+            </topaz-table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-md-9 text-center">
+            <topaz-pareto-chart data="durationParetoChartData.chart"
+                                classes="'info0'"
+                                y-axis-labels="['Number of containers']"
+                                show-y-axis="true"
+                                show-totals="false"
+                                show-legend="false"
+                                height="300px"
+                                width="100%"
+                                max-width="1000"
+                                title="Storage duration">
+            </topaz-pareto-chart>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 30px;">
+        <div class="col-xs-12 col-md-9 text-center">
+            <topaz-table data="durationParetoChartData.table"
+                         headers="{ duration: 'Duration',
+                                        containerCount: 'Container Count',
+                                        cumulativePercentage: 'Cumulative Percentage'
+                                    }"
+                         column-formatting="{ cumulativePercentage: percentFormatter }"
+                         sort-functions="{ cumulativePercentage: percentSorter }"
+                         non-numeric-columns="['cumulativePercentage']"
+                         default-order="asc"
+                         default-selection="cumulativePercentage"
+                         pagination="false">
+            </topaz-table>
+        </div>
+    </div>
+</topaz-section>
+
+<topaz-section header="Storage past threshold">
+    <div class="row col-xs-12 col-md-9 text-center">
+        <topaz-bar-chart data="thresholdBarChartData.chart"
+                         classes="{ 'Count': 'info0',
+                                                        'Mean time': 'info1',
+                                                        'Median time': 'info2'
+                                                }"
+                         drilldown-data="organizationUrls"
+                         y-axis-labels="['Number of containers', 'Time past threshold (months)']"
+                         show-y-axis="true"
+                         show-totals="false"
+                         multiple-axes="true"
+                         type="stacked"
+                         height="300px"
+                         width="100%"
+                         max-width="1000"
+                         title="'Containers past threshold date'">
+        </topaz-bar-chart>
+    </div>
+    <div class="row" style="margin-bottom: 30px;">
+        <div class="col-xs-12 col-md-9 text-center">
+            <topaz-table data="thresholdBarChartData.table"
+                         headers="{ 'domain': 'Organization',
+                                            'count': 'Count',
+                                            'meanTime': 'Mean time',
+                                            'medianTime': 'Median time'
+                                        }"
+                         column-formatting="{ meanTime: roundFormat(2, true) }"
+                         pagination="false">
+            </topaz-table>
+        </div>
+    </div>
+</topaz-section>
+
+<topaz-section header="Stored Assets">
+    <div class="col-xs-12 col-md-9 text-center">
+        <topaz-table data="fullTableData"
+                     headers="{ 'storageTagId': 'Storage Tag ID', 
+                        'description': 'Description', 
+                        'receiveDate': 'Receive Date', 
+                        'thresholdDate': 'Threshold Date', 
+                        'pastThresholdDate': 'Past Threshold Date', 
+                        'organization': 'Organization'
+                     }"
+                     pagination="true">
+        </topaz-table>
+    </div>
+</topaz-section>
+
+<topaz-section header="Explanation">
+    <div class="row col-xs-9">
+        <p>
+            EO&amp;T pays for entire blocks, in 43,000 sq ft segments, of secured off-site storage, whether full or partially vacant.
+            At the EO&amp;T level on this report, the total physical footprint is the actual storage footprint of RDG's containers.
+            The charges are billed to either BT&amp;E or BR&amp;T; the physical and charged footprints shown are what costs would be if billing were refined by each organization's usage.
+            This is determined by the number of storage containers owned by each organization out of the total number owned by EO&amp;T.
+        </p>
+        <p>
+            When containers are sent to off-site storage they are assigned a threshold date by the asset owner.
+            The "Containers past threshold date" chart displays information about containers that are stored past the stated threshold date.
+            There are currently some containers with no threshold date set.
+        </p>
+    </div>
+</topaz-section>
