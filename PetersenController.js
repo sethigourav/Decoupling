@@ -1,18 +1,29 @@
-﻿topazApp.controller('PetersenController', ['$scope', '$server', function ($scope, $server) {
+﻿topazApp.controller('PetersenController', ['$scope', '$server', '$http', function ($scope, $server, $http) {
+    
     $scope.on("selectionBoxesLoaded", function () {
-        $server.bindData("OrganizationFootprintData", $scope, "footprintOrgData", { callback: function (d) { $scope.organizationUrls = d.urls } });
-        $server.bindData("OrganizationDurationData", $scope, "durationOrgData", { callback: function (d) { $scope.organizationUrls = d.urls } });
-        $server.bindData("DurationParetoChartData", $scope, "durationParetoChartData");
-        $server.bindData("ThresholdBarChartData", $scope, "thresholdBarChartData", {
-            callback: function (d) {
-                $scope.organizationUrls = d.urls
-            }
-        });
-        $server.bindData("PetersenFullTableData", $scope, "fullTableData");;
+        $scope.applyFilterButtonEnabled = true;
     });
 
 
     $scope.rawData.url = "PetersenRawData"
 
     $scope.locationSelectionBox.visible = false;
+
+    $scope.goFilter = {
+
+        submit: function () {
+            $scope.applyFilterClicked = true;
+
+                var config = {
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'
+                    }
+                }
+
+                var querystring = window.location.search.substring(1);
+
+                // code to call API's and bind scope variables
+            }
+    };
+
 }]);
