@@ -4,6 +4,13 @@
     Layout = "/Views/Shared/_DefaultReportPage.cshtml";
 }
 
+@section ApplyFilterButton
+{
+    <div>
+        <button id="btnfilter1" class="btn btn-default" ng-click="goFilter.submit()" ng-disabled="!applyFilterButtonEnabled" style="margin-left:15px;margin-bottom:20px">Apply Filters</button>
+    </div>
+}
+
 @section ExtraSelectionBoxes
 {
     <div class="col-xs-12 col-sm-4 col-md-3">
@@ -162,7 +169,8 @@
                             height="300px" 
                             width="100%"   
                             max-width="800" 
-                            bar-tooltip="true">
+                            bar-tooltip="true"
+                            callback-fn="goFilter.submit()">
         </topaz-par-chart>
     </div>
 </topaz-section>
@@ -178,7 +186,8 @@
                             height="300px"
                             width="100%"
                             max-width="800"
-                            bar-tooltip="true">
+                            bar-tooltip="true"
+                            callback-fn="goFilter.submit()">
         </topaz-par-chart>
     </div>
 </topaz-section>

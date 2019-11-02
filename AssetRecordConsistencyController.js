@@ -1,10 +1,8 @@
-﻿topazApp.controller('AssetRecordConsistencyController', ['$scope', '$server', function ($scope, $server) {
+﻿topazApp.controller('AssetRecordConsistencyController', ['$scope', '$server','$http', function ($scope, $server, $http) {
     window.assetRecordConsistencyController = $scope;
 
     $scope.on("selectionBoxesLoaded", function () {
-        $server.bindData("AssetRecordConsistencyAssetData", $scope, "assetRecordConsistencyAssetData");
-        $server.bindData("AssetRecordConsistencyOrganizationData", $scope, "assetRecordConsistencyOrganizationData", { callback: function (d) { $scope.organizationUrls = d.urls } });
-        $server.bindData("AssetRecordConsistencyLocationData", $scope, "assetRecordConsistencyLocationData", { callback: function (d) { $scope.locationUrls = d.urls } });
+        $scope.applyFilterButtonEnabled = true;
     });
 
     $scope.buttonFormatter = {
@@ -55,6 +53,49 @@
     
     $scope.employeeSelectionBox.visible = true;
     $scope.rawData.url = "AssetRecordConsistencyRawData";
+
+    $scope.goFilter = {
+
+        submit: function () {
+            $scope.applyFilterClicked = true;
+
+                var config = {
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'
+                    }
+                }
+
+                var querystring = window.location.search.substring(1);
+
+                // code to call API's and bind scope variables
+
+                $http.post("/API/AssetRecordConsistencyAssetData" + '?hash_id=' + Math.random(), querystring, config)
+                .success(function (data) {
+
+                    data = typeof data === 'string' && data && (data[0] == '{' || data[0] == '[' || data == "true" || data == "false") ? eval('(' + data + ')') : data;
+
+                    $scope.assetRecordConsistencyAssetData = data;                                     
+                });
+                
+                $http.post("/API/AssetRecordConsistencyOrganizationData" + '?hash_id=' + Math.random(), querystring, config)
+                .success(function (data) {
+
+                    data = typeof data === 'string' && data && (data[0] == '{' || data[0] == '[' || data == "true" || data == "false") ? eval('(' + data + ')') : data;
+
+                    $scope.assetRecordConsistencyOrganizationData = data;                    
+                    $scope.organizationUrls = data.urls;
+                });
+
+                $http.post("/API/AssetRecordConsistencyLocationData" + '?hash_id=' + Math.random(), querystring, config)
+                .success(function (data) {
+
+                    data = typeof data === 'string' && data && (data[0] == '{' || data[0] == '[' || data == "true" || data == "false") ? eval('(' + data + ')') : data;
+
+                    $scope.assetRecordConsistencyLocationData = data;
+                    $scope.locationUrls = data.urls;
+                });               
+            }
+    };
 
     
     $scope.assetInput = {
