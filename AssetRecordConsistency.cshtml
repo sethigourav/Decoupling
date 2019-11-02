@@ -1,0 +1,185 @@
+﻿@{
+    ViewContext.ViewBag.Node = "assetsystemrecordconsistency";
+    ViewContext.ViewBag.AngularController = "AssetRecordConsistencyController";
+    Layout = "/Views/Shared/_DefaultReportPage.cshtml";
+}
+
+@section ExtraSelectionBoxes
+{
+    <div class="col-xs-12 col-sm-4 col-md-3">
+        <topaz-selection-box data="assetInput" title="Asset Information">
+            <row>
+                <column>
+                    Asset ID:
+                </column>
+                <column>
+                    <input style="width: 100%" type="text" ng-model="assetInput.assetId" maxlength="50" />
+                </column>
+                <column>
+                    <label class="btn btn-xs">
+                        <input type="checkbox" ng-model="assetInput.assetIdExact"> Exact
+                    </label>
+                </column>
+            </row>
+            <row>
+                <column>
+                    Serial No:
+                </column>
+                <column>
+                    <input style="width: 100%" type="text" ng-model="assetInput.serialNo" maxlength="50" />
+                </column>
+                <column>
+                </column>
+            </row>
+            <row>
+                <column>
+                    Weight between:
+                </column>
+                <column>
+                    <input type="text" placeholder="pounds" style="width:33%" maxlength="9" ng-model="assetInput.lowerWeight" />
+                    <span>&nbsp;and&nbsp;</span>
+                    <input type="text" placeholder="pounds" style="width:33%" maxlength="9" ng-model="assetInput.upperWeight" />
+                </column>
+                <column>
+                </column>
+            </row>
+            <row>
+                <column>
+                </column>
+                <column>
+                </column>
+                <column>
+                    <button type="button" class="btn btn-default btn-xs" ng-click="submitValues()">
+                        Submit
+                    </button>
+                </column>
+            </row>
+        </topaz-selection-box>
+    </div>
+    <div class="col-xs-12 col-sm-4 col-md-3">
+        <topaz-selection-box data="modelInput" title="Model Information">
+            <row>
+                <column>
+                    Manufacturer:
+                </column>
+                <column>
+                    <input style="width: 100%" type="text" ng-model="modelInput.manufacturer" maxlength="64" />
+                </column>
+                <column>
+                    <label class="btn btn-xs">
+                        <input type="checkbox" ng-model="modelInput.manufacturerExact"> Exact
+                    </label>
+                </column>
+            </row>
+            <row>
+                <column>
+                    Model No:
+                </column>
+                <column>
+                    <input style="width: 100%" type="text" ng-model="modelInput.modelNo" maxlength="75" />
+                </column>
+                <column>
+                    <label class="btn btn-xs">
+                        <input type="checkbox" ng-model="modelInput.modelNoExact"> Exact
+                    </label>
+                </column>
+            </row>
+            <row>
+                <column>
+                    Description:
+                </column>
+                <column>
+                    <input style="width: 100%" type="text" ng-model="modelInput.noun" maxlength="256" />
+                </column>
+                <column>
+                    <label class="btn btn-xs">
+                        <input type="checkbox" ng-model="modelInput.nounExact"> Exact
+                    </label>
+                </column>
+            </row>
+            <row>
+                <column>
+                </column>
+                <column>
+                </column>
+                <column>
+                    <button type="button" class="btn btn-default btn-xs" ng-click="submitValues()">
+                        Submit
+                    </button>
+                </column>
+            </row>
+        </topaz-selection-box>
+    </div>
+}
+<div ng-if="assetRecordConsistencyAssetData.assetCount > assetRecordConsistencyAssetData.pageLimit">
+    <topaz-banner type="warning" text="There are {{assetRecordConsistencyAssetData.assetCount}} assets in the selected inventory. Record Consistency information for the first {{assetRecordConsistencyAssetData.pageLimit}} are shown in the table below. The summary charts display information for all of the selected assets." class="col-xs-12"></topaz-banner>
+</div>
+<div ng-show="showingData">
+    <topaz-section ng-if="selectedModels.systems" header="Asset ID {{ selectedModels.assetId }} system record consistency: {{ selectedModels.consistency }}%" scope-name="headerScope">
+        <div class="row col-xs-12">
+            <asset-consistency-matrix systems="selectedModels.systems" best-known="selectedModels.bestKnown" headers="['Organization', 'Location', 'Custodian', 'Status']" keys="['organization', 'location', 'custodian', 'status']"></asset-consistency-matrix>
+        </div>
+    </topaz-section>
+</div>
+<topaz-section header="Asset list">
+    <div class="row col-xs-12">
+       <topaz-table data="assetRecordConsistencyAssetData.list"
+                        headers="{
+                        assetId: 'Asset ID',
+                        systemRecordConsistency: 'Score',
+                        assetManufacturer: 'Manufacturer',
+                        assetModel: 'Model',
+                        sourceSystems: 'Source systems',
+                        organization: 'Organization',
+                        assetBuilding: 'Location',
+                        assetSystemRecordConsistencyData: 'View'
+                        }" 
+                        shifted-up="true"
+                        styles="wide-table"
+                        pagination="true"
+                        page-size="10"
+                        search="true"
+                        default-selection="AssetId"
+                        default-order="asc"
+                        sort-functions="{
+                            systemRecordConsistency: percentSorter
+                        }"
+                        special-formatting="buttonFormatter">
+                        
+                            
+            </topaz-table>
+    </div>
+</topaz-section>
+
+<topaz-section header="Asset system record consistency, by organization">
+    <div class="row col-xs-12">
+        <topaz-par-chart data="assetRecordConsistencyOrganizationData.chart"
+                            classes="{ '<60%': 'danger0', '60-90%': 'warning0', '>90%': 'success0' }"
+                            drilldown-data="organizationUrls"
+                            legend-title="Score"
+                            prefix="O" 
+                            type="stacked"
+                            height="300px" 
+                            width="100%"   
+                            max-width="800" 
+                            bar-tooltip="true">
+        </topaz-par-chart>
+    </div>
+</topaz-section>
+
+<topaz-section header="Asset system record consistency, by location">
+    <div class="row col-xs-12">
+        <topaz-par-chart data="assetRecordConsistencyLocationData.chart"
+                            classes="{ '<60%': 'danger0', '60-90%': 'warning0', '>90%': 'success0' }"
+                            drilldown-data="locationUrls"
+                            legend-title="Score"
+                            prefix="O"
+                            type="stacked"
+                            height="300px"
+                            width="100%"
+                            max-width="800"
+                            bar-tooltip="true">
+        </topaz-par-chart>
+    </div>
+</topaz-section>
+
