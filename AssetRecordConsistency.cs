@@ -29,12 +29,12 @@ namespace Topaz.Domain.Concrete.Systems.Multi
                         (case when LEN(MaximoAssets.Organization) >= 5 then SUBSTRING(MaximoAssets.Organization, 4, 2) else '(unknown)' end) as MaximoHome,
                         (case when LEN(MaximoAssets.Organization) >= 10 then SUBSTRING(MaximoAssets.Organization, 7, 4) else '(unknown)' end) as MaximoDepartment,
                         (case when CribA.SERIALID is not null or CribB.SERIALID is not null then 1 else 0 end) as ContainsCribmaster,
-                                                                                              (case when CribA.SERIALID is null then CribB.BU_BestKnown         else CribA.BU_BestKnown         end) as CribmasterBU,
-                                                                                              (case when CribA.SERIALID is null then CribB.Home_BestKnown       else CribA.BU_BestKnown         end) as CribmasterHome,
-                                                                                              (case when CribA.SERIALID is null then CribB.Department_BestKnown else CribA.Department_BestKnown end) as CribmasterDepartment,
-                                                                                              (case when CribA.SERIALID is null then CribB.Building_BestKnown   else CribA.Building_BestKnown   end) as CribmasterBuilding,
-                                                                                              (case when CribA.SERIALID is null then CribB.Custodian_BestKnown  else CribA.Custodian_BestKnown  end) as CribmasterCustodian,
-                                                                                              (case when CribA.SERIALID is null then CribB.STATUSDESC           else CribA.STATUSDESC           end) as CribmasterStatus,
+                        (case when CribA.SERIALID is null then CribB.BU_BestKnown         else CribA.BU_BestKnown         end) as CribmasterBU,
+                        (case when CribA.SERIALID is null then CribB.Home_BestKnown       else CribA.BU_BestKnown         end) as CribmasterHome,
+                        (case when CribA.SERIALID is null then CribB.Department_BestKnown else CribA.Department_BestKnown end) as CribmasterDepartment,
+                        (case when CribA.SERIALID is null then CribB.Building_BestKnown   else CribA.Building_BestKnown   end) as CribmasterBuilding,
+                        (case when CribA.SERIALID is null then CribB.Custodian_BestKnown  else CribA.Custodian_BestKnown  end) as CribmasterCustodian,
+                        (case when CribA.SERIALID is null then CribB.STATUSDESC           else CribA.STATUSDESC           end) as CribmasterStatus,
                         AsmesBUTransform as AssetSmartBUTransform, AsmesHomeTransform as AssetSmartHomeTransform, AsmesDepartmentTransform as AssetSmartDepartmentTransform, AsmesOrganizationValid as AssetSmartOrganizationValid, AsmesBuildingTransform as AssetSmartBuildingTransform, AsmesLocationValid as AssetSmartLocationValid, AsmesCustodianTransform as AssetSmartCustodianTransform, AsmesCustodianValid as AssetSmartCustodianValid, AsmesPropertyStatusTransform as AssetSmartPropertyStatusTransform, AsmesPropertyStatusValid as AssetSmartPropertyStatusValid";
 
         public static void ExportRawData(OrganizationSelection organization, LocationSelection location, EmployeeSelection employee, TopazRequest request)
