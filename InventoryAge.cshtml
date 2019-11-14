@@ -1,0 +1,586 @@
+﻿@{
+    ViewContext.ViewBag.Node = "inventoryage";
+    ViewContext.ViewBag.AngularController = "InventoryAgeController";
+    ViewContext.ViewBag.SystemSelect = true;
+    Layout = "/Views/Shared/_DefaultReportPage.cshtml";
+}
+
+<div class="row col-xs-12">
+    <div class="alert alert-danger" @*ng-if=" <%= Master.NonBteDisclaimer %> "*@>
+    <button data-dismiss="alert" class="close" type="button">×</button>
+    <strong>Capital asset cost for non-BT&amp;E assets is available only from February 2016 onward.  This must be taken into account when viewing charts and tables displaying BT&amp;E and non-BT&amp;E asset cost.</strong>
+</div>
+</div>
+
+
+
+
+<div id="AssetAgeByOrganization" class="row section" @*ng-show="dataSelectionHeader"*@>
+    <div class="col-xs-12">
+        <div class="panel panel-section">
+            <div class="panel-heading">
+                <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#AssetAgeOrganization">Asset age, by organization</a></h4>
+            </div>
+            <div id="AssetAgeOrganization" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    <div class="row" style="margin-top: 30px">
+                        <div class="col-xs-12 centered-horizontal">
+                            <topaz-bar-chart data="organizationCountAgeData.chart"
+                                                classes="{'0 to 3 Years': 'info0', '3+ to 7 Years': 'info1', '7+ to 12 Years': 'info2', '12+ Years': 'info3'}"
+                                                drilldown-data="organizationUrls"
+                                                show-y-axis="true"
+                                                show-totals="false"
+                                                type="stacked"
+                                                height="300px"
+                                                width="100%"
+                                                max-width="1000"
+                                                title="Number of assets, by age and organization">
+
+                            </topaz-bar-chart>
+                        </div>
+                        <div class="row" style="margin-top: 10px">
+                            <div class="col-xs-12 centered-horizontal">
+                                <topaz-table data="organizationCountAgeData.table"
+                                                headers="{ 'organization': organizationSelection.childTierLabel || 'Organization',
+                                                '0To3Years': 'Assets Age 0 to 3 Years',
+                                                '3+To7Years': 'Assets Age 3+ to 7 Years',
+                                                '7+To12Years': 'Assets Age 7+ to 12 Years',
+                                                '12+Years': 'Assets Age 12+ Years'
+                                            }"
+                                                calculate-totals="both"
+                                                total-title-column="organization"
+                                                sort-functions="{'organization': 'numericRangeSorter'}">
+                                </topaz-table>
+                        
+                                @*<script>
+                                    topazTable({
+                                        "<%= Master.ChildOrganizationTierLabel %>": "Organization",
+                                        "0 to 3 Years": "Assets Age Age 0-3 Years",
+                                        "3+ to 7 Years": "Assets Age 3+ to 7 Years",
+                                        "7+ to 12 Years": "Assets Age 7+ to 12 Years",
+                                        "12+ Years": "Assets Age 12+ Years"
+                                    }, <%= AgeDataTableOrganization %>, {
+                                        calculateTotals: "both",
+                                        totalTitleColumn: "<%= Master.ChildOrganizationTierLabel %>",
+                                        sortFunctions: {
+                                            "<%= Master.ChildOrganizationTierLabel %>": numericRangeSorter
+                                        }
+                                    });
+                                </script>*@
+                            </div>
+                        </div>
+                        <div class="col-xs-12 centered-horizontal">
+                            <topaz-bar-chart data="organizationCostAgeData.chart"
+                                            classes="{'0 to 3 Years': 'info0', '3+ to 7 Years': 'info1', '7+ to 12 Years': 'info2', '12+ Years': 'info3'}"
+                                            drilldown-data="organizationUrls"
+                                            show-y-axis="true"
+                                            show-totals= "false"
+                                            type= "stacked"
+                                            height= "300px"
+                                            width= "100%"
+                                            max-width= "1000"
+                                            title= "Cost of assets, by age and organization"
+                                            margins= "{ t: '30px' }">
+
+                            </topaz-bar-chart>
+                        </div>
+                        <div class="row" style="margin-top: 10px">
+                            <div class="col-xs-12 centered-horizontal">
+                                <topaz-table data="organizationCostAgeData.table"
+                                                headers="{ 'organization': organizationSelection.childTierLabel || 'Organization',
+                                                '0To3Years': 'Assets 0 to 3 Years Sum Cost',
+                                                '3+To7Years': 'Assets 3+ to 7 Years Sum Cost',
+                                                '7+To12Years': 'Assets 7+ to 12 Years Sum Cost',
+                                                '12+Years': 'Assets 12+ Years Sum Cost'
+                                            }"
+                                                calculate-totals="both"
+                                                default-number-formatter="fixedDecimalNumberFormatter(2)"
+                                                total-title-column="organization"
+                                                sort-functions="{'organization': 'numericRangeSorter'}">
+                                </topaz-table>
+                                @*<script>
+                                    topazTable({
+                                        "<%= Master.ChildOrganizationTierLabel %>": "Organization",
+                                        "0 to 3 Years": "Assets 0 to 3 Years Sum Cost",
+                                        "3+ to 7 Years": "Assets 3+ to 7 Years Sum Cost",
+                                        "7+ to 12 Years": "Assets 7+ to 12 Years Sum Cost",
+                                        "12+ Years": "Assets 12+ Years Sum Cost"
+                                    }, <%= AgeDataTableCostOrganization %>, {
+                                        calculateTotals: "both",
+                                        defaultNumberFormatter: fixedDecimalNumberFormatter(2),
+                                        totalTitleColumn: "<%= Master.ChildOrganizationTierLabel %>",
+                                        sortFunctions: {
+                                            "<%= Master.ChildOrganizationTierLabel %>": numericRangeSorter
+                                        }
+                                    });
+                                </script>*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="AssetAgeByLocation" class="row section" @*ng-show="dataSelectionHeader"*@>
+    <div class="col-xs-12">
+        <div class="panel panel-section">
+            <div class="panel-heading">
+                <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#AssetAgeLocation">Asset age, by location</a></h4>
+            </div>
+            <div id="AssetAgeLocation" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    <div class="row" style="margin-top: 30px">
+                        <div class="col-xs-12 centered-horizontal">
+                            @*<script>
+                                topazBarChart(<%= AgeDataLocation %>, {
+                                    classes: {
+                                        "0 to 3 Years": "info0",
+                                        "3+ to 7 Years": "info1",
+                                        "7+ to 12 Years": "info2",
+                                        "12+ Years": "info3"
+                                    },
+                                    drilldownData: locationUrls,
+                                    showYAxis: true,
+                                    showTotals: false,
+                                    type: "stacked",
+                                    height: "300px",
+                                    width: "100%",
+                                    maxWidth: 1000,
+                                    title: "Number of assets, by age and location"
+                                });
+                            </script>*@
+                            <topaz-bar-chart data="locationCountAgeData.chart"
+                                                classes="{'0 to 3 Years': 'info0', '3+ to 7 Years': 'info1', '7+ to 12 Years': 'info2', '12+ Years': 'info3'}"
+                                                drilldown-data="locationUrls"
+                                                show-y-axis="true"
+                                                show-totals="false"
+                                                type="stacked"
+                                                height="300px"
+                                                width="100%"
+                                                max-width="1000"
+                                                title="Number of assets, by age and location">
+
+                            </topaz-bar-chart>
+                        </div>
+                        <div class="row" style="margin-top: 10px">
+                            <div class="col-xs-12 centered-horizontal">
+                                @*<script>
+                                    topazTable({
+                                        "<%= Master.ChildLocationTierLabel %>": "Location",
+                                        "0 to 3 Years": "0 to 3 Years",
+                                        "3+ to 7 Years": "3+ to 7 Years",
+                                        "7+ to 12 Years": "7+ to 12 Years",
+                                        "12+ Years": "12+ Years"
+                                    }, <%= AgeDataTableLocation %>, {
+                                        calculateTotals: "both",
+                                        totalTitleColumn: "<%= Master.ChildLocationTierLabel %>",
+                                        sortFunctions: {
+                                            "<%= Master.ChildLocationTierLabel %>": numericRangeSorter
+                                        }
+                                    });
+                                </script>*@
+                                <topaz-table data="locationCountAgeData.table"
+                                                headers="{ 'location': locationSelection.childTierLabel || 'Location',
+                                                '0To3Years': 'Assets Age 0 to 3 Years',
+                                                '3+To7Years': 'Assets Age 3+ to 7 Years',
+                                                '7+To12Years': 'Assets Age 7+ to 12 Years',
+                                                '12+Years': 'Assets Age 12+ Years'
+                                            }"
+                                                calculate-totals="both"
+                                                default-number-formatter="fixedDecimalNumberFormatter(2)"
+                                                total-title-column="location"
+                                                sort-functions="{'location': 'numericRangeSorter'}">
+                                </topaz-table>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 centered-horizontal">
+                            @*<script>
+                                topazBarChart(<%= AgeDataCostLocation %>, {
+                                        classes: {
+                                        "0 to 3 Years": "info0",
+                                        "3+ to 7 Years": "info1",
+                                        "7+ to 12 Years": "info2",
+                                        "12+ Years": "info3"
+                                },
+                                    drilldownData: locationUrls,
+                                    showYAxis: true,
+                                    showTotals: false,
+                                    type: "stacked",
+                                    height: "300px",
+                                    width: "100%",
+                                    maxWidth: 1000,
+                                    title: "Cost of assets, by age and Location",
+                                    margins: { t: "30px"
+                                    }
+                                });
+                            </script>*@
+                            <topaz-bar-chart data="locationCostAgeData.chart"
+                                                classes="{'0 to 3 Years': 'info0', '3+ to 7 Years': 'info1', '7+ to 12 Years': 'info2', '12+ Years': 'info3'}"
+                                                drilldown-data="locationUrls"
+                                                show-y-axis="true"
+                                                show-totals="false"
+                                                type="stacked"
+                                                height="300px"
+                                                width="100%"
+                                                max-width="1000"
+                                                title="Cost of assets, by age and location"
+                                                margins="{ t: '30px' }">
+
+                            </topaz-bar-chart>
+                        </div>
+                        <div class="row" style="margin-top: 10px">
+                            <div class="col-xs-12 centered-horizontal">
+                                @*<script>
+                                    topazTable({
+                                        "<%= Master.ChildLocationTierLabel %>": "Location",
+                                        "0 to 3 Years": "0 to 3 Years",
+                                        "3+ to 7 Years": "3+ to 7 Years",
+                                        "7+ to 12 Years": "7+ to 12 Years",
+                                        "12+ Years": "12+ Years"
+                                    }, <%= AgeDataTableCostLocation %>, {
+                                        calculateTotals: "both",
+                                        defaultNumberFormatter: fixedDecimalNumberFormatter(2),
+                                        totalTitleColumn: "<%= Master.ChildLocationTierLabel %>",
+                                        sortFunctions: {
+                                            "<%= Master.ChildLocationTierLabel %>": numericRangeSorter
+                                        }
+                                    });
+                                </script>*@
+
+                                <topaz-table data="locationCostAgeData.table"
+                                                headers="{ 'location': locationSelection.childTierLabel || 'Location',
+                                                '0To3Years': 'Assets 0 to 3 Years Sum Cost',
+                                                '3+To7Years': 'Assets 3+ to 7 Years Sum Cost',
+                                                '7+To12Years': 'Assets 7+ to 12 Years Sum Cost',
+                                                '12+Years': 'Assets 12+ Years Sum Cost'
+                                            }"
+                                                calculate-totals="both"
+                                                default-number-formatter="fixedDecimalNumberFormatter(2)"
+                                                total-title-column="location"
+                                                sort-functions="{'location': 'numericRangeSorter'}">
+                                </topaz-table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="PercentLifeByOrganization" class="row section" @*ng-show="dataSelectionHeader"*@>
+    <div class="col-xs-12">
+        <div class="panel panel-section">
+            <div class="panel-heading">
+                <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#PercentLifeOrganization">Asset percent life, by organization</a></h4>
+            </div>
+            <div id="PercentLifeOrganization" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    <div class="row" style="margin-top: 30px">
+                        <div class="col-xs-12 centered-horizontal">
+                            @*<script>
+                                topazBarChart(<%= PercentDataOrganization %>, {
+                                    classes: {
+                                        "Age 0-100%": "info0",
+                                        "Age 100-200%": "info1",
+                                        "Age 200-300%": "info2",
+                                        "Age 300+%": "info3"
+                                    },
+                                    drilldownData: organizationUrls,
+                                    showYAxis: true,
+                                    showTotals: false,
+                                    type: "stacked",
+                                    height: "300px",
+                                    width: "100%",
+                                    maxWidth: 1000,
+                                    title: "Number of assets, by percent of life and organization"
+                                });
+                            </script>*@
+                            <topaz-bar-chart data="organizationPercentCountAgeData.chart"
+                                                classes="{'Age 0-100%': 'info0', 'Age 100-200%': 'info1', 'Age 200-300%': 'info2', 'Age 300+%': 'info3'}"
+                                                drilldown-data="organizationUrls"
+                                                show-y-axis="true"
+                                                show-totals="false"
+                                                type="stacked"
+                                                height="300px"
+                                                width="100%"
+                                                max-width="1000"
+                                                title="Number of assets, by percent of life and organization">
+
+                            </topaz-bar-chart>
+                        </div>
+                        <div class="row" style="margin-top: 10px">
+                            <div class="col-xs-12 centered-horizontal">
+                                @*<script>
+                                    topazTable({
+                                        "<%= Master.ChildOrganizationTierLabel %>": "Organization",
+                                        "Age 0-100%": "Age 0-100%",
+                                        "Age 100-200%": "Age 100-200%",
+                                        "Age 200-300%": "Age 200-300%",
+                                        "Age 300+%": "Age 300+%"
+                                    }, <%= PercentDataTableOrganization %>, {
+                                        calculateTotals: "both",
+                                        totalTitleColumn: "<%= Master.ChildOrganizationTierLabel %>",
+                                        sortFunctions: {
+                                            "<%= Master.ChildOrganizationTierLabel %>": numericRangeSorter
+                                        }
+                                    });
+                                </script>*@
+                                <topaz-table data="organizationPercentCountAgeData.table"
+                                                headers="{ 'organization': organizationSelection.childTierLabel || 'Organization',
+                                                'age0-100%': 'Age 0-100%',
+                                                'age100-200%': 'Age 100-200%',
+                                                'age200-300%': 'Age 200-300%',
+                                                'age300+%': 'Age 300+%'
+                                            }"
+                                                calculate-totals="both"
+                                                total-title-column="organization"
+                                                sort-functions="{'organization': 'numericRangeSorter'}">
+                                </topaz-table>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 centered-horizontal">
+                            @*<script>
+                                topazBarChart(<%= PercentDataCostOrganization %>, {
+                                    classes: {
+                                        "Age 0-100%": "info0",
+                                        "Age 100-200%": "info1",
+                                        "Age 200-300%": "info2",
+                                        "Age 300+%": "info3"
+                                    },
+                                    drilldownData: organizationUrls,
+                                    showYAxis: true,
+                                    showTotals: false,
+                                    type: "stacked",
+                                    height: "300px",
+                                    width: "100%",
+                                    maxWidth: 1000,
+                                    title: "Cost of assets, by percent of life and organization",
+                                    margins: { t: "30px" }
+                                });
+                            </script>*@
+                            <topaz-bar-chart data="organizationPercentCostAgeData.chart"
+                                                classes="{'Age 0-100%': 'info0', 'Age 100-200%': 'info1', 'Age 200-300%': 'info2', 'Age 300+%': 'info3'}"
+                                                drilldown-data="organizationUrls"
+                                                show-y-axis="true"
+                                                show-totals="false"
+                                                type="stacked"
+                                                height="300px"
+                                                width="100%"
+                                                max-width="1000"
+                                                title="Cost of assets, by percent of life and organization"
+                                                margins="{t: '30px'}">
+                            </topaz-bar-chart>
+                        </div>
+                        <div class="row" style="margin-top: 10px">
+                            <div class="col-xs-12 centered-horizontal">
+                                @*<script>
+                                    topazTable({
+                                        "<%= Master.ChildOrganizationTierLabel %>": "Organization",
+                                        "Age 0-100%": "Age 0-100%",
+                                        "Age 100-200%": "Age 100-200%",
+                                        "Age 200-300%": "Age 200-300%",
+                                        "Age 300+%": "Age 300+%"
+                                    }, <%= PercentDataTableCostOrganization %>, {
+                                        calculateTotals: "both",
+                                        defaultNumberFormatter: fixedDecimalNumberFormatter(2),
+                                        totalTitleColumn: "<%= Master.ChildOrganizationTierLabel %>",
+                                        sortFunctions: {
+                                            "<%= Master.ChildOrganizationTierLabel %>": numericRangeSorter
+                                        }
+                                    });
+                                </script>*@
+                                <topaz-table data="organizationPercentCostAgeData.table"
+                                                headers="{ 'organization': LocationSelection.childTierLabel || 'Organization',
+                                                'age0-100%': 'Age 0-100%',
+                                                'age100-200%': 'Age 100-200%',
+                                                'age200-300%': 'Age 200-300%',
+                                                'age300+%': 'Age 300+%'
+                                            }"
+                                                calculate-totals="both"
+                                                default-number-formatter="fixedDecimalNumberFormatter(2)"
+                                                total-title-column="organization"
+                                                sort-functions="{'organization': 'numericRangeSorter'}">
+                                </topaz-table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="PercentLifeByLocation" class="row section" @*ng-show="dataSelectionHeader"*@>
+    <div class="col-xs-12">
+        <div class="panel panel-section">
+            <div class="panel-heading">
+                <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#PercentLifeLocation">Asset percent life, by location</a></h4>
+            </div>
+            <div id="PercentLifeLocation" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    <div class="row" style="margin-top: 30px">
+                        <div class="col-xs-12 centered-horizontal">
+                            @*<script>
+                                topazBarChart(<%= PercentDataLocation %>, {
+                                    classes: {
+                                        "Age 0-100%": "info0",
+                                        "Age 100-200%": "info1",
+                                        "Age 200-300%": "info2",
+                                        "Age 300+%": "info3"
+                                    },
+                                    drilldownData: locationUrls,
+                                    showYAxis: true,
+                                    showTotals: false,
+                                    type: "stacked",
+                                    height: "300px",
+                                    width: "100%",
+                                    maxWidth: 1000,
+                                    title: "Number of assets, by percent of life and location"
+                                });
+                            </script>*@
+                            <topaz-bar-chart data="locationPercentCountAgeData.chart"
+                                                classes="{'Age 0-100%': 'info0', 'Age 100-200%': 'info1', 'Age 200-300%': 'info2', 'Age 300+%': 'info3'}"
+                                                drilldown-data="locationUrls"
+                                                show-y-axis="true"
+                                                show-totals="false"
+                                                type="stacked"
+                                                height="300px"
+                                                width="100%"
+                                                max-width="1000"
+                                                title="Number of assets, by percent of life and location">
+
+                            </topaz-bar-chart>
+                        </div>
+                        <div class="row" style="margin-top: 10px">
+                            <div class="col-xs-12 centered-horizontal">
+                                @*<script>
+                                    topazTable({
+                                        "<%= Master.ChildLocationTierLabel %>": "Location",
+                                        "Age 0-100%": "Age 0-100%",
+                                        "Age 100-200%": "Age 100-200%",
+                                        "Age 200-300%": "Age 200-300%",
+                                        "Age 300+%": "Age 300+%"
+                                    }, <%= PercentDataTableLocation %>, {
+                                        calculateTotals: "both",
+                                        totalTitleColumn: "<%= Master.ChildLocationTierLabel %>",
+                                        sortFunctions: {
+                                            "<%= Master.ChildLocationTierLabel %>": numericRangeSorter
+                                        }
+                                    });
+                                </script>*@
+                                <topaz-table data="locationPercentCountAgeData.table"
+                                                headers="{ 'location': locationSelection.childTierLabel || 'Location',
+                                                'age0-100%': 'Age 0-100%',
+                                                'age100-200%': 'Age 100-200%',
+                                                'age200-300%': 'Age 200-300%',
+                                                'age300+%': 'Age 300+%'
+                                            }"
+                                                calculate-totals="both"
+                                                total-title-column="location"
+                                                sort-functions="{'location': 'numericRangeSorter'}">
+                                </topaz-table>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 centered-horizontal">
+                            @*<script>
+                                topazBarChart(<%= PercentDataCostLocation %>, {
+                                        classes: {
+                                        "Age 0-100%": "info0",
+                                        "Age 100-200%": "info1",
+                                        "Age 200-300%": "info2",
+                                        "Age 300+%": "info3"
+                                },
+                                    drilldownData: locationUrls,
+                                    showYAxis: true,
+                                    showTotals: false,
+                                    type: "stacked",
+                                    height: "300px",
+                                    width: "100%",
+                                    maxWidth: 1000,
+                                    title: "Cost of assets, by percent of life and Location",
+                                    margins: { t: "30px"
+                                    }
+                                });
+                            </script>*@
+                            <topaz-bar-chart data="locationPercentCostAgeData.chart"
+                                                classes="{'Age 0-100%': 'info0', 'Age 100-200%': 'info1', 'Age 200-300%': 'info2', 'Age 300+%': 'info3'}"
+                                                drilldown-data="locationUrls"
+                                                show-y-axis="true"
+                                                show-totals="false"
+                                                type="stacked"
+                                                height="300px"
+                                                width="100%"
+                                                max-width="1000"
+                                                title="Cost of assets, by percent of life and Location"
+                                                margins="{ t: '30px' }">
+
+                            </topaz-bar-chart>
+                        </div>
+                        <div class="row" style="margin-top: 10px">
+                            <div class="col-xs-12 centered-horizontal">
+                                @*<script>
+                                    topazTable({
+                                        "<%= Master.ChildLocationTierLabel %>": "Location",
+                                        "Age 0-100%": "Age 0-100%",
+                                        "Age 100-200%": "Age 100-200%",
+                                        "Age 200-300%": "Age 200-300%",
+                                        "Age 300+%": "Age 300+%"
+                                    }, <%= PercentDataTableCostLocation %>, {
+                                        calculateTotals: "both",
+                                        defaultNumberFormatter: fixedDecimalNumberFormatter(2),
+                                        totalTitleColumn: "<%= Master.ChildLocationTierLabel %>",
+                                        sortFunctions: {
+                                            "<%= Master.ChildLocationTierLabel %>": numericRangeSorter
+                                        }
+                                    });
+                                </script>*@
+                                <topaz-table data="locationPercentCostAgeData.table"
+                                                headers="{ 'location': locationSelection.childTierLabel || 'Location',
+                                                'age0-100%': 'Age 0-100%',
+                                                'age100-200%': 'Age 100-200%',
+                                                'age200-300%': 'Age 200-300%',
+                                                'age300+%': 'Age 300+%'
+                                            }"
+                                                calculate-totals="both"
+                                                default-number-formatter="fixedDecimalNumberFormatter(2)"
+                                                total-title-column="location"
+                                                sort-functions="{'location': 'numericRangeSorter'}">
+                                </topaz-table>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<topaz-section name="Explanation" header="Explanation" , style="margin-top: 20px">
+    <div class="row col-xs-12">
+        <p>
+            This report gives the count and acquisition cost of assets categorized by absolute age and percent of life, broken down by organization and location for the selected population.
+            The source data system for this report is <topaz-definition term="EAS">EAS</topaz-definition>.
+            Assets with <topaz-definition term="EAS">EAS</topaz-definition> status In Service, Lost, Out of service, and Surplused are shown here (Disposed, Pre-Ready, Purged, or Transferred are not).
+</p>
+
+        <p>
+            Here we define the <b>percent of life</b> of an asset as the age of the asset (time since its <topaz-definition term="EAS">EAS</topaz-definition> Acquisition Date) divided by its <topaz-definition term="EAS">EAS</topaz-definition> Estimated Life.
+    <b>The <topaz-definition term="EAS">EAS</topaz-definition> Estimated Life value does not represent expected in-use lifetime of an asset.</b> The Estimated Life value is used to forecast depreciation and net book value of an asset.
+    Assets with a percent of life value over 100% have exceeded their estimated life.
+</p>
+
+        <p>
+            The source data is from <topaz-definition term="EAS">EAS</topaz-definition>, refreshed at the beginning of every month with the previous month's snapshot.
+    There is a delay, typically a few days, at the beginning of each month for the data to be delivered and merged into this system.
+    Reports are outdated until this data is incorporated.
+</p>
+    </div>
+</topaz-section>
