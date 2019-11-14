@@ -5,15 +5,24 @@
     Layout = "/Views/Shared/_DefaultReportPage.cshtml";
 }
 
+@section ApplyFilterButton
+{
+    <div>
+        <button id="btnfilter" class="btn btn-default" ng-click="goFilter.submit()" ng-disabled="!applyFilterButtonEnabled" style="margin-left:15px;margin-bottom:20px">Apply Filters</button>
+    </div>
+}
+
+<div class="alert alert-info" id="nodataselection" ng-if="!applyFilterClicked">
+    <button data-dismiss="alert" class="close" type="button">×</button>
+    <strong>Please make a data selection and click apply filters button in order to view page information.</strong>
+</div>
+
 <div class="row col-xs-12">
     <div class="alert alert-danger" @*ng-if=" <%= Master.NonBteDisclaimer %> "*@>
     <button data-dismiss="alert" class="close" type="button">×</button>
     <strong>Capital asset cost for non-BT&amp;E assets is available only from February 2016 onward.  This must be taken into account when viewing charts and tables displaying BT&amp;E and non-BT&amp;E asset cost.</strong>
 </div>
 </div>
-
-
-
 
 <div id="AssetAgeByOrganization" class="row section" @*ng-show="dataSelectionHeader"*@>
     <div class="col-xs-12">
@@ -34,7 +43,8 @@
                                                 height="300px"
                                                 width="100%"
                                                 max-width="1000"
-                                                title="Number of assets, by age and organization">
+                                                title="Number of assets, by age and organization"
+                                                callback-fn="goFilter.submit()">
 
                             </topaz-bar-chart>
                         </div>
@@ -80,7 +90,8 @@
                                             width= "100%"
                                             max-width= "1000"
                                             title= "Cost of assets, by age and organization"
-                                            margins= "{ t: '30px' }">
+                                            margins= "{ t: '30px' }"
+                                            callback-fn="goFilter.submit()">
 
                             </topaz-bar-chart>
                         </div>
@@ -159,7 +170,8 @@
                                                 height="300px"
                                                 width="100%"
                                                 max-width="1000"
-                                                title="Number of assets, by age and location">
+                                                title="Number of assets, by age and location"
+                                                callback-fn="goFilter.submit()">
 
                             </topaz-bar-chart>
                         </div>
@@ -225,8 +237,8 @@
                                                 width="100%"
                                                 max-width="1000"
                                                 title="Cost of assets, by age and location"
-                                                margins="{ t: '30px' }">
-
+                                                margins="{ t: '30px' }"
+                                                callback-fn="goFilter.submit()">
                             </topaz-bar-chart>
                         </div>
                         <div class="row" style="margin-top: 10px">
@@ -269,7 +281,6 @@
     </div>
 </div>
 
-
 <div id="PercentLifeByOrganization" class="row section" @*ng-show="dataSelectionHeader"*@>
     <div class="col-xs-12">
         <div class="panel panel-section">
@@ -307,7 +318,8 @@
                                                 height="300px"
                                                 width="100%"
                                                 max-width="1000"
-                                                title="Number of assets, by percent of life and organization">
+                                                title="Number of assets, by percent of life and organization"
+                                                callback-fn="goFilter.submit()">
 
                             </topaz-bar-chart>
                         </div>
@@ -371,7 +383,8 @@
                                                 width="100%"
                                                 max-width="1000"
                                                 title="Cost of assets, by percent of life and organization"
-                                                margins="{t: '30px'}">
+                                                margins="{t: '30px'}"
+                                                callback-fn="goFilter.submit()">
                             </topaz-bar-chart>
                         </div>
                         <div class="row" style="margin-top: 10px">
@@ -449,7 +462,8 @@
                                                 height="300px"
                                                 width="100%"
                                                 max-width="1000"
-                                                title="Number of assets, by percent of life and location">
+                                                title="Number of assets, by percent of life and location"
+                                                callback-fn="goFilter.submit()">
 
                             </topaz-bar-chart>
                         </div>
@@ -514,7 +528,8 @@
                                                 width="100%"
                                                 max-width="1000"
                                                 title="Cost of assets, by percent of life and Location"
-                                                margins="{ t: '30px' }">
+                                                margins="{ t: '30px' }"
+                                                callback-fn="goFilter.submit()">
 
                             </topaz-bar-chart>
                         </div>
@@ -557,11 +572,6 @@
         </div>
     </div>
 </div>
-
-
-
-
-
 
 <topaz-section name="Explanation" header="Explanation" , style="margin-top: 20px">
     <div class="row col-xs-12">
