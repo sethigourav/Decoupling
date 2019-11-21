@@ -4,6 +4,17 @@
     Layout = "/Views/Shared/_DefaultReportPage.cshtml";
 }
 
+@section ApplyFilterButton
+{
+    <div>
+        <button id="btnfilter" class="btn btn-default" ng-click="goFilter.submit()" ng-disabled="!applyFilterButtonEnabled" style="margin-left:15px;margin-bottom:20px">Apply Filters</button>
+    </div>
+}
+
+<div class="alert alert-info" id="nodataselection" ng-if="!applyFilterClicked">
+    <button data-dismiss="alert" class="close" type="button">×</button>
+    <strong>Please make a data selection and click apply filters button in order to view page information.</strong>
+</div>
 <topaz-section header="Weighed assets, by organization">
     <div class="row col-xs-12 col-md-9 centered-horizontal">
         <topaz-bar-chart data="organizationWeighedUnweighedAssetCounts.chart"
@@ -13,7 +24,8 @@
                          width="100%"
                          max-width="800"
                          show-y-axis="true"
-                         type="stacked">
+                         type="stacked"
+                         callback-fn="goFilter.submit()">
         </topaz-bar-chart>
     </div>
     <div class="row col-xs-12 col-md-9 centered-horizontal">
@@ -40,7 +52,8 @@
                          width="100%"
                          maxWidth="800"
                          show-y-axis="true"
-                         type="stacked">
+                         type="stacked"
+                         callback-fn="goFilter.submit()">
         </topaz-bar-chart>
     </div>
     <div class="row col-xs-12 col-md-9 centered-horizontal">
