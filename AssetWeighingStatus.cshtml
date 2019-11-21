@@ -1,0 +1,112 @@
+﻿@{
+    ViewContext.ViewBag.AngularController = "AssetWeighingStatusController";
+    ViewContext.ViewBag.Node = "weightstatus";
+    Layout = "/Views/Shared/_DefaultReportPage.cshtml";
+}
+
+<topaz-section header="Weighed assets, by organization">
+    <div class="row col-xs-12 col-md-9 centered-horizontal">
+        <topaz-bar-chart data="organizationWeighedUnweighedAssetCounts.chart"
+                         classes="{ 'Unweighed' : 'danger0', 'Weighed': 'success0' }"
+                         drilldown-data="organizationUrls"
+                         height="300px"
+                         width="100%"
+                         max-width="800"
+                         show-y-axis="true"
+                         type="stacked">
+        </topaz-bar-chart>
+    </div>
+    <div class="row col-xs-12 col-md-9 centered-horizontal">
+        <topaz-table data="organizationWeighedUnweighedAssetCounts.table"
+                     headers="{ 'organization': organization.tierTitle,
+                                'unweighed': 'Unweighed asset count',
+                                'weighed': 'Weighed asset count',
+                                'percent': 'Percent weighed',
+                              }"
+                     total-title-column="organization"
+                     column-formatting="{ 'percent' : decimalPercentFormatter }"
+                     calculate-totals="horizontal"
+                     calculate-total="calculateTotal">
+        </topaz-table>
+    </div>
+</topaz-section>
+
+<topaz-section header="Weighed assets, by location">
+    <div class="row col-xs-12 col-md-9 centered-horizontal">
+        <topaz-bar-chart data="locationWeighedUnweighedAssetCounts.chart"
+                         classes="{ 'Unweighed' : 'danger0', 'Weighed': 'success0' }"
+                         drilldown-data="locationUrls"
+                         height="300px"
+                         width="100%"
+                         maxWidth="800"
+                         show-y-axis="true"
+                         type="stacked">
+        </topaz-bar-chart>
+    </div>
+    <div class="row col-xs-12 col-md-9 centered-horizontal">
+        <topaz-table data="locationWeighedUnweighedAssetCounts.table"
+                     headers="{ 'location': location.tierTitle,
+                                'unweighed': 'Unweighed asset count',
+                                'weighed': 'Weighed asset count',
+                                'percent': 'Percent weighed',
+                            }"
+                     total-title-column="location"
+                     column-formatting="{ 'percent' : decimalPercentFormatter }"
+                     calculate-totals="horizontal"
+                     calculate-total="calculateTotal">
+        </topaz-table>
+    </div>
+</topaz-section>
+
+<topaz-section header="Unweighed asset lists">
+    <div class="row col-xs-12 col-md-9">
+        <topaz-table data="weighedUnweighedAssetTable"
+                     headers="{ 'assetId': 'Asset ID',
+                                'serialNo': 'Serial No',
+                                'manufacturer': 'Manufacturer',
+                                'model': 'Model No',
+                                'noun': 'Description',
+                                'propertyStatus': 'Asset Status',
+                                'acctDept': 'Accounting Department',
+                                'building': 'Building'
+                              }"
+                     pagination="true"
+                     page-size="10"
+                     show-page-controls="auto"
+                     wide="false"
+                     condensed="true"
+                     search="true"
+                     export-url="WeighedUnweighedAssetTable"
+                     title="Unweighed assets">
+        </topaz-table>
+    </div>
+    <div class="row col-xs-12 col-md-9" style="margin-top: 20px;">
+        <topaz-table data="weighedUnweighedModelTable"
+                     headers="{
+                                'model': 'Model No',
+                                'manufacturer': 'Manufacturer',
+                                'num': 'Unweighed asset count'
+                            }"
+                     pagination="true"
+                     page-size="10"
+                     show-page-controls="auto"
+                     wide="false"
+                     condensed="true"
+                     search="true"
+                     export-url="WeighedUnweighedModelTable"
+                     title="Unweighed models">
+        </topaz-table>
+    </div>
+</topaz-section>
+
+<topaz-section header="Explanation">
+    <div class="col-xs-9 col-sm-9">
+        <p>
+            This page displays the proportion of non-surplused assets in the selected inventory that have a known weight.
+            The asset weight data is from <topaz-definition term="SIMON" href="http://simon.web.rdgcorp.com/">SIMON</topaz-definition>.
+            The assets with known weights are either assets in <topaz-definition term="SIMON">SIMON</topaz-definition> itself, or assets from a different system that have an exact match with model and manufacturer information in <topaz-definition term="SIMON">SIMON</topaz-definition>.
+</p>
+        <p>Asset weights information is needed to support the <a href="http://go4zero.web.rdgcorp.com/common/documents/safety_standards/G4Z_lifting_standard_FAQ.pdf">Go for Zero 35 lb (16 kg) Lifting Standard</a>.</p>
+        <p>The asset list and raw data contain information for up to 1000 of the unweighed, non-surplus assets in the selected inventory.  The model list contains information for up to 1000 of the unweighed models in the selected inventory.</p>
+    </div>
+</topaz-section>
